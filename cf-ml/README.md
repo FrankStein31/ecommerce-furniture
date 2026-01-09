@@ -2,6 +2,8 @@
 
 Sistem Pendukung Keputusan (SPK) untuk memberikan rekomendasi perbaikan perabotan rumah tangga menggunakan kombinasi tiga metode: **Forward Chaining**, **Certainty Factor**, dan **Decision Tree (Machine Learning)**.
 
+> 🎓 **Skripsi:** Analisis Perbandingan Metode Forward Chaining dan Certainty Factor pada Sistem Pakar Rekomendasi Perbaikan Mebel
+
 ---
 
 ## 📋 Daftar Isi
@@ -11,6 +13,7 @@ Sistem Pendukung Keputusan (SPK) untuk memberikan rekomendasi perbaikan perabota
 3. [Struktur Project](#struktur-project)
 4. [Instalasi](#instalasi)
 5. [Cara Menjalankan](#cara-menjalankan)
+6. [Quick Start](#quick-start)
 6. [Dokumentasi Modul](#dokumentasi-modul)
 7. [API Endpoint](#api-endpoint)
 8. [Metodologi](#metodologi)
