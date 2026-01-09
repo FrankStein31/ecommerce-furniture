@@ -884,12 +884,17 @@ CREATE TABLE `rekomendasi_perbaikan` (
   `id` int NOT NULL AUTO_INCREMENT,
   `kode_rekomendasi` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Kode unik (R001, R002, ...)',
   `nama_rekomendasi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Nama rekomendasi singkat',
-  `detail_perbaikan` text COLLATE utf8mb4_unicode_ci COMMENT 'Detail langkah perbaikan',
+  `deskripsi_rekomendasi` text COLLATE utf8mb4_unicode_ci COMMENT 'Deskripsi singkat rekomendasi',
   `estimasi_harga_min` decimal(12,2) DEFAULT NULL COMMENT 'Harga minimum',
   `estimasi_harga_max` decimal(12,2) DEFAULT NULL COMMENT 'Harga maksimum',
-  `estimasi_waktu` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Estimasi waktu (2-3 hari, 1 minggu, dll)',
+  `estimasi_waktu` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Estimasi waktu (opsional, untuk referensi)',
   `mb_value` decimal(3,2) DEFAULT '0.00' COMMENT 'Measure of Belief (0.00 - 1.00)',
   `md_value` decimal(3,2) DEFAULT '0.00' COMMENT 'Measure of Disbelief (0.00 - 1.00)',
+  `cf_value` decimal(3,2) DEFAULT '0.00' COMMENT 'Certainty Factor (MB - MD)',
+  `solusi_perbaikan` text COLLATE utf8mb4_unicode_ci COMMENT 'Langkah-langkah detail perbaikan',
+  `biaya_estimasi` decimal(12,2) DEFAULT '0.00' COMMENT 'Estimasi biaya perbaikan',
+  `durasi_perbaikan` int DEFAULT '0' COMMENT 'Durasi perbaikan dalam hari',
+  `tingkat_prioritas` enum('rendah','sedang','tinggi') COLLATE utf8mb4_unicode_ci DEFAULT 'sedang' COMMENT 'Tingkat prioritas rekomendasi',
   `urutan` int DEFAULT '0',
   `status` enum('1','0') COLLATE utf8mb4_unicode_ci DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -898,23 +903,23 @@ CREATE TABLE `rekomendasi_perbaikan` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_kode_rekomendasi` (`kode_rekomendasi`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data rekomendasi perbaikan dengan MB & MD';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data rekomendasi perbaikan dengan MB & MD';
 
 /*Data for the table `rekomendasi_perbaikan` */
 
-insert  into `rekomendasi_perbaikan`(`id`,`kode_rekomendasi`,`nama_rekomendasi`,`detail_perbaikan`,`estimasi_harga_min`,`estimasi_harga_max`,`estimasi_waktu`,`mb_value`,`md_value`,`urutan`,`status`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'R01','Ganti sarung jok','Untuk kerusakan: Sarung jok robek. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,1,'1','2026-01-09 20:53:27',NULL,NULL),
-(2,'R02','Ganti kain','Untuk kerusakan: Kain kursi/ sofa / springbed / matras robek. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,2,'1','2026-01-09 20:53:27',NULL,NULL),
-(3,'R03','Menambal / ganti spons dudukan','Untuk kerusakan: Spons berlubang. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,3,'1','2026-01-09 20:53:27',NULL,NULL),
-(4,'R04','Menambah / ganti spons','Untuk kerusakan: Spons kempes. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,4,'1','2026-01-09 20:53:27',NULL,NULL),
-(5,'R05','Mengencangkan atau ganti karet','Untuk kerusakan: Karet kendor. Tingkat: berat',NULL,NULL,NULL,0.60,0.40,5,'1','2026-01-09 20:53:27',NULL,NULL),
-(6,'R06','Mengganti pir / sistem perdudukan','Untuk kerusakan: Karet / pir putus. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,6,'1','2026-01-09 20:53:27',NULL,NULL),
-(7,'R07','Penggantian sebagian rangka kayu','Untuk kerusakan: kerangka kayu lapuk. Tingkat: berat',NULL,NULL,NULL,0.60,0.40,7,'1','2026-01-09 20:53:27',NULL,NULL),
-(8,'R08','Penggantian rangka dudukan','Untuk kerusakan: Kerangka kayu patah. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,8,'1','2026-01-09 20:53:27',NULL,NULL),
-(9,'R09','Penyesuaian dan pengencangan sarung jok','Untuk kerusakan: sarung jok kendor. Tingkat: ringan',NULL,NULL,NULL,0.80,0.20,9,'1','2026-01-09 20:53:27',NULL,NULL),
-(10,'R10','Menjahit ulang jahitan','Untuk kerusakan: Jahitan lepas. Tingkat: ringan',NULL,NULL,NULL,1.00,0.00,10,'1','2026-01-09 20:53:27',NULL,NULL),
-(11,'R11','Penggantian kain jok','Untuk kerusakan: Warna kain memudar. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,11,'1','2026-01-09 20:53:27',NULL,NULL),
-(12,'R12','Mengganti pasak, menambah lem, dan paku','Untuk kerusakan: Pasak kerangka menyusut / paku lepas. Tingkat: sedang',NULL,NULL,NULL,0.60,0.40,12,'1','2026-01-09 20:53:27',NULL,NULL);
+insert  into `rekomendasi_perbaikan`(`id`,`kode_rekomendasi`,`nama_rekomendasi`,`deskripsi_rekomendasi`,`estimasi_harga_min`,`estimasi_harga_max`,`estimasi_waktu`,`mb_value`,`md_value`,`cf_value`,`solusi_perbaikan`,`biaya_estimasi`,`durasi_perbaikan`,`tingkat_prioritas`,`urutan`,`status`,`created_at`,`updated_at`,`deleted_at`) values 
+(1,'R01','Ganti sarung jok','Untuk kerusakan: Sarung jok robek. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,1.00,'',150000.00,1,'sedang',1,'1','2026-01-09 20:53:27','2026-01-09 15:54:07',NULL),
+(2,'R02','Ganti kain','Untuk kerusakan: Kain kursi/ sofa / springbed / matras robek. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,1.00,'',200000.00,1,'sedang',2,'1','2026-01-09 20:53:27','2026-01-09 15:54:43',NULL),
+(3,'R03','Menambal / ganti spons dudukan','Untuk kerusakan: Spons berlubang. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,0.60,'',300000.00,1,'sedang',3,'1','2026-01-09 20:53:27','2026-01-09 15:56:27',NULL),
+(4,'R04','Menambah / ganti spons','Untuk kerusakan: Spons kempes. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,0.60,'',200000.00,1,'sedang',4,'1','2026-01-09 20:53:27','2026-01-09 15:56:48',NULL),
+(5,'R05','Mengencangkan atau ganti karet','Untuk kerusakan: Karet kendor. Tingkat: berat',NULL,NULL,NULL,0.60,0.40,0.20,'',150000.00,0,'sedang',5,'1','2026-01-09 20:53:27','2026-01-09 15:57:27',NULL),
+(6,'R06','Mengganti pir / sistem perdudukan','Untuk kerusakan: Karet / pir putus. Tingkat: berat',NULL,NULL,NULL,0.80,0.20,0.60,'',300000.00,0,'sedang',6,'1','2026-01-09 20:53:27','2026-01-09 15:57:45',NULL),
+(7,'R07','Penggantian sebagian rangka kayu','Untuk kerusakan: kerangka kayu lapuk. Tingkat: berat',NULL,NULL,NULL,0.60,0.40,0.00,NULL,0.00,0,'sedang',7,'1','2026-01-09 20:53:27',NULL,NULL),
+(8,'R08','Penggantian rangka dudukan','Untuk kerusakan: Kerangka kayu patah. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,0.00,NULL,0.00,0,'sedang',8,'1','2026-01-09 20:53:27',NULL,NULL),
+(9,'R09','Penyesuaian dan pengencangan sarung jok','Untuk kerusakan: sarung jok kendor. Tingkat: ringan',NULL,NULL,NULL,0.80,0.20,0.00,NULL,0.00,0,'sedang',9,'1','2026-01-09 20:53:27',NULL,NULL),
+(10,'R10','Menjahit ulang jahitan','Untuk kerusakan: Jahitan lepas. Tingkat: ringan',NULL,NULL,NULL,1.00,0.00,0.00,NULL,0.00,0,'sedang',10,'1','2026-01-09 20:53:27',NULL,NULL),
+(11,'R11','Penggantian kain jok','Untuk kerusakan: Warna kain memudar. Tingkat: berat',NULL,NULL,NULL,1.00,0.00,0.00,NULL,0.00,0,'sedang',11,'1','2026-01-09 20:53:27',NULL,NULL),
+(12,'R12','Mengganti pasak, menambah lem, dan paku','Untuk kerusakan: Pasak kerangka menyusut / paku lepas. Tingkat: sedang',NULL,NULL,NULL,0.60,0.40,0.00,NULL,0.00,0,'sedang',12,'1','2026-01-09 20:53:27',NULL,NULL);
 
 /*Table structure for table `relasi_gejala_jenis_perbaikan` */
 
@@ -963,9 +968,19 @@ CREATE TABLE `relasi_rekomendasi_jenis_kerusakan` (
   KEY `fk_relasi_rek_jk` (`id_jenis_kerusakan`) USING BTREE,
   CONSTRAINT `fk_relasi_rek_jk` FOREIGN KEY (`id_jenis_kerusakan`) REFERENCES `jenis_kerusakan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_relasi_rek_rek` FOREIGN KEY (`id_rekomendasi_perbaikan`) REFERENCES `rekomendasi_perbaikan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relasi rekomendasi dengan jenis kerusakan';
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relasi rekomendasi dengan jenis kerusakan';
 
 /*Data for the table `relasi_rekomendasi_jenis_kerusakan` */
+
+insert  into `relasi_rekomendasi_jenis_kerusakan`(`id`,`id_rekomendasi_perbaikan`,`id_jenis_kerusakan`,`created_at`) values 
+(6,1,1,'2026-01-09 22:54:07'),
+(7,1,9,'2026-01-09 22:54:07'),
+(8,2,2,'2026-01-09 22:54:43'),
+(9,2,11,'2026-01-09 22:54:43'),
+(10,3,3,'2026-01-09 22:56:27'),
+(11,4,3,'2026-01-09 22:56:48'),
+(12,5,5,'2026-01-09 22:57:27'),
+(13,6,6,'2026-01-09 22:57:45');
 
 /*Table structure for table `roles` */
 
