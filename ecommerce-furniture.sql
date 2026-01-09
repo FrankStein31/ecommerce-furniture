@@ -153,6 +153,89 @@ CREATE TABLE `diagnosis_session` (
 
 /*Data for the table `diagnosis_session` */
 
+/*Table structure for table `gejala_jenis_perbaikan` */
+
+CREATE TABLE `gejala_jenis_perbaikan` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_gejala` int NOT NULL COMMENT 'FK ke gejala_kerusakan',
+  `id_jenis_perbaikan` int NOT NULL COMMENT 'FK ke jenis_perbaikan',
+  `keterangan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Keterangan tambahan relasi',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_gejala_jenis` (`id_gejala`,`id_jenis_perbaikan`),
+  KEY `idx_gejala` (`id_gejala`),
+  KEY `idx_jenis` (`id_jenis_perbaikan`),
+  CONSTRAINT `fk_gjp_gejala` FOREIGN KEY (`id_gejala`) REFERENCES `gejala_kerusakan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_gjp_jenis` FOREIGN KEY (`id_jenis_perbaikan`) REFERENCES `jenis_perbaikan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relasi many-to-many gejala dan jenis perbaikan';
+
+/*Data for the table `gejala_jenis_perbaikan` */
+
+insert  into `gejala_jenis_perbaikan`(`id`,`id_gejala`,`id_jenis_perbaikan`,`keterangan`,`created_at`,`updated_at`) values 
+(1,1,1,'Kursi sofa 321 kipas sering mengalami rembes','2026-01-09 21:54:47',NULL),
+(2,1,2,'Kursi 321 jaguar rentan rembes','2026-01-09 21:54:47',NULL),
+(3,1,3,'Kursi sofa valenci dapat mengalami rembes','2026-01-09 21:54:47',NULL),
+(4,1,4,'Kursi sofa tunggu bisa rembes','2026-01-09 21:54:47',NULL),
+(5,1,5,'Kursi sofa lesehan sering rembes','2026-01-09 21:54:47',NULL),
+(6,1,6,'Kursi sofa (L) sudut dapat rembes','2026-01-09 21:54:47',NULL),
+(7,1,7,'Kursi sofa (L) minimalis bisa rembes','2026-01-09 21:54:47',NULL),
+(8,2,1,'Kenyamanan berkurang seiring waktu','2026-01-09 21:54:47',NULL),
+(9,2,2,'Dudukan menjadi tidak nyaman','2026-01-09 21:54:47',NULL),
+(10,2,3,NULL,'2026-01-09 21:54:47',NULL),
+(11,2,4,NULL,'2026-01-09 21:54:47',NULL),
+(12,2,19,'Kursi kantor putar sering tidak nyaman','2026-01-09 21:54:47',NULL),
+(13,2,60,'Kasur springbed bisa tidak nyaman','2026-01-09 21:54:47',NULL),
+(14,2,61,NULL,'2026-01-09 21:54:47',NULL),
+(15,2,62,NULL,'2026-01-09 21:54:47',NULL),
+(16,3,1,'Dudukan amblas karena busa kempes','2026-01-09 21:54:47',NULL),
+(17,3,2,NULL,'2026-01-09 21:54:47',NULL),
+(18,3,3,NULL,'2026-01-09 21:54:47',NULL),
+(19,3,5,NULL,'2026-01-09 21:54:47',NULL),
+(20,3,6,NULL,'2026-01-09 21:54:47',NULL),
+(21,3,19,'Kursi kantor bisa amblas','2026-01-09 21:54:47',NULL),
+(22,3,60,'Springbed amblas','2026-01-09 21:54:47',NULL),
+(23,3,61,NULL,'2026-01-09 21:54:47',NULL),
+(24,4,1,'Warna kain pudar karena sinar matahari','2026-01-09 21:54:47',NULL),
+(25,4,2,NULL,'2026-01-09 21:54:47',NULL),
+(26,4,3,NULL,'2026-01-09 21:54:47',NULL),
+(27,4,4,NULL,'2026-01-09 21:54:47',NULL),
+(28,4,8,'Kursi tamu ligna','2026-01-09 21:54:47',NULL),
+(29,4,9,'Kursi tamu Jengki','2026-01-09 21:54:47',NULL),
+(30,4,19,'Kursi kantor','2026-01-09 21:54:47',NULL),
+(31,4,60,'Kasur springbed','2026-01-09 21:54:47',NULL),
+(32,4,63,'Kasur busa','2026-01-09 21:54:47',NULL),
+(33,5,1,NULL,'2026-01-09 21:54:47',NULL),
+(34,5,2,NULL,'2026-01-09 21:54:47',NULL),
+(35,5,8,NULL,'2026-01-09 21:54:47',NULL),
+(36,5,10,'Kursi kayu gajagan','2026-01-09 21:54:47',NULL),
+(37,5,11,'Kursi kayu tigeran','2026-01-09 21:54:47',NULL),
+(38,5,19,NULL,'2026-01-09 21:54:47',NULL),
+(39,5,22,'Kursi rias','2026-01-09 21:54:47',NULL),
+(40,6,1,'Kain sofa memar','2026-01-09 21:54:47',NULL),
+(41,6,2,NULL,'2026-01-09 21:54:47',NULL),
+(42,6,3,NULL,'2026-01-09 21:54:47',NULL),
+(43,6,19,'Kursi kantor memar','2026-01-09 21:54:47',NULL),
+(44,6,60,'Springbed pipih','2026-01-09 21:54:47',NULL),
+(45,6,61,NULL,'2026-01-09 21:54:47',NULL),
+(46,6,62,NULL,'2026-01-09 21:54:47',NULL),
+(47,6,63,'Kasur busa pipih','2026-01-09 21:54:47',NULL),
+(48,7,1,'Kain sofa retak karena usia','2026-01-09 21:54:47',NULL),
+(49,7,2,NULL,'2026-01-09 21:54:47',NULL),
+(50,7,3,NULL,'2026-01-09 21:54:47',NULL),
+(51,7,25,'Jok motor retak','2026-01-09 21:54:47',NULL),
+(52,7,26,NULL,'2026-01-09 21:54:47',NULL),
+(53,7,50,'Jok mobil retak','2026-01-09 21:54:47',NULL),
+(54,7,51,NULL,'2026-01-09 21:54:47',NULL),
+(55,7,60,'Cover springbed retak','2026-01-09 21:54:47',NULL),
+(56,8,1,'Kerangka sofa reyot','2026-01-09 21:54:47',NULL),
+(57,8,2,NULL,'2026-01-09 21:54:47',NULL),
+(58,8,6,NULL,'2026-01-09 21:54:47',NULL),
+(59,8,8,'Kursi tamu ligna kerangka reyot','2026-01-09 21:54:47',NULL),
+(60,8,10,'Kursi kayu gajagan','2026-01-09 21:54:47',NULL),
+(61,8,11,'Kursi kayu tigeran','2026-01-09 21:54:47',NULL),
+(62,8,19,'Kursi kantor reyot','2026-01-09 21:54:47',NULL);
+
 /*Table structure for table `gejala_kerusakan` */
 
 CREATE TABLE `gejala_kerusakan` (
@@ -169,7 +252,7 @@ CREATE TABLE `gejala_kerusakan` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_kode_gejala` (`kode_gejala`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data gejala kerusakan';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data gejala kerusakan';
 
 /*Data for the table `gejala_kerusakan` */
 
@@ -202,12 +285,12 @@ CREATE TABLE `jenis_kerusakan` (
   UNIQUE KEY `uk_kode_kerusakan` (`kode_kerusakan`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE,
   KEY `idx_tingkat` (`tingkat_kerusakan`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data jenis kerusakan';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master data jenis kerusakan';
 
 /*Data for the table `jenis_kerusakan` */
 
 insert  into `jenis_kerusakan`(`id`,`kode_kerusakan`,`nama_jenis_kerusakan`,`detail_kerusakan`,`pertanyaan`,`ilustrasi_gambar`,`tingkat_kerusakan`,`urutan`,`status`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'JK001','Sarung jok robek',NULL,'Apakah furniture Anda mengalami kerusakan: sarung jok robek?',NULL,'berat',1,'1','2026-01-09 20:40:57',NULL,NULL),
+(1,'JK001','Sarung jok robek','','Apakah furniture Anda mengalami kerusakan: sarung jok robek?','assets/uploads/kerusakan/kerusakan_1767971992.jpg','berat',1,'1','2026-01-09 20:40:57','2026-01-09 15:21:22',NULL),
 (2,'JK002','Kain kursi/ sofa / springbed / matras robek',NULL,'Apakah furniture Anda mengalami kerusakan: kain kursi/ sofa / springbed / matras robek?',NULL,'berat',2,'1','2026-01-09 20:40:57',NULL,NULL),
 (3,'JK003','Spon berlubang',NULL,'Apakah furniture Anda mengalami kerusakan: spon berlubang?',NULL,'berat',3,'1','2026-01-09 20:40:57',NULL,NULL),
 (4,'JK004','Busa Kempes',NULL,'Apakah furniture Anda mengalami kerusakan: busa kempes?',NULL,'berat',4,'1','2026-01-09 20:40:57',NULL,NULL),
@@ -219,6 +302,28 @@ insert  into `jenis_kerusakan`(`id`,`kode_kerusakan`,`nama_jenis_kerusakan`,`det
 (10,'JK010','Jahitan lepas',NULL,'Apakah furniture Anda mengalami kerusakan: jahitan lepas?',NULL,'ringan',10,'1','2026-01-09 20:40:57',NULL,NULL),
 (11,'JK011','Warna kain memudar',NULL,'Apakah furniture Anda mengalami kerusakan: warna kain memudar?',NULL,'berat',11,'1','2026-01-09 20:40:57',NULL,NULL),
 (12,'JK012','Pasak kerangka menyusut / paku lepas',NULL,'Apakah furniture Anda mengalami kerusakan: pasak kerangka menyusut / paku lepas?',NULL,'sedang',12,'1','2026-01-09 20:40:57',NULL,NULL);
+
+/*Table structure for table `jenis_kerusakan_gejala` */
+
+CREATE TABLE `jenis_kerusakan_gejala` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_jenis_kerusakan` int NOT NULL COMMENT 'FK ke jenis_kerusakan',
+  `id_gejala` int NOT NULL COMMENT 'FK ke gejala_kerusakan',
+  `bobot` decimal(3,2) DEFAULT NULL COMMENT 'Bobot gejala untuk kerusakan ini (0.00-1.00)',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_kerusakan_gejala` (`id_jenis_kerusakan`,`id_gejala`),
+  KEY `idx_jenis_kerusakan` (`id_jenis_kerusakan`),
+  KEY `idx_gejala` (`id_gejala`),
+  CONSTRAINT `fk_jkg_gejala` FOREIGN KEY (`id_gejala`) REFERENCES `gejala_kerusakan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_jkg_jenis_kerusakan` FOREIGN KEY (`id_jenis_kerusakan`) REFERENCES `jenis_kerusakan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relasi many-to-many jenis kerusakan dan gejala';
+
+/*Data for the table `jenis_kerusakan_gejala` */
+
+insert  into `jenis_kerusakan_gejala`(`id`,`id_jenis_kerusakan`,`id_gejala`,`bobot`,`created_at`,`updated_at`) values 
+(2,1,7,NULL,'2026-01-09 15:21:22',NULL);
 
 /*Table structure for table `jenis_perbaikan` */
 
@@ -237,7 +342,7 @@ CREATE TABLE `jenis_perbaikan` (
   KEY `fk_jenis_perbaikan_kategori` (`id_kategori`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE,
   CONSTRAINT `fk_jenis_perbaikan_kategori` FOREIGN KEY (`id_kategori`) REFERENCES `kategori_jenis_perbaikan` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Jenis furniture yang bisa diperbaiki';
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Jenis furniture yang bisa diperbaiki';
 
 /*Data for the table `jenis_perbaikan` */
 
@@ -291,7 +396,7 @@ insert  into `jenis_perbaikan`(`id`,`id_kategori`,`nama_jenis_perbaikan`,`deskri
 (47,3,'Jok motor Mega Pro',NULL,NULL,24,'1','2026-01-09 20:41:35',NULL,NULL),
 (48,3,'Jok motor RC',NULL,NULL,25,'1','2026-01-09 20:41:35',NULL,NULL),
 (49,3,'Jok motor Honda star',NULL,NULL,26,'1','2026-01-09 20:41:35',NULL,NULL),
-(50,4,'jok mobil ayla',NULL,NULL,1,'1','2026-01-09 20:41:35',NULL,NULL),
+(50,4,'jok mobil ayla','jok mobil ayla',NULL,1,'1','2026-01-09 20:41:35','2026-01-09 15:11:40',NULL),
 (51,4,'Jok mobil Colt Pick Up',NULL,NULL,2,'1','2026-01-09 20:41:35',NULL,NULL),
 (52,4,'Jok mobil L300 Pick Up',NULL,NULL,3,'1','2026-01-09 20:41:35',NULL,NULL),
 (53,4,'Jok mobil Suzuki Carry',NULL,NULL,4,'1','2026-01-09 20:41:35',NULL,NULL),
@@ -325,7 +430,7 @@ CREATE TABLE `kategori_jenis_perbaikan` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kategori utama jenis furniture';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kategori utama jenis furniture';
 
 /*Data for the table `kategori_jenis_perbaikan` */
 

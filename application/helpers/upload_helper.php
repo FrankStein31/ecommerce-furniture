@@ -65,4 +65,55 @@
 		}
 		return $response;
 	}
+
+	/**
+	 * Upload image dengan validasi modern
+	 * 
+	 * @param string $field_name Nama field input file
+	 * @param string $folder_name Nama folder tujuan (tanpa slash)
+	 * @param int $max_size Max size dalam KB (default 2048 = 2MB)
+	 * @param string $allowed_types Tipe file yang diizinkan (default: jpg|jpeg|png|gif)
+	 * @return array ['status' => bool, 'message' => string, 'file_path' => string]
+	 */
+	function upload_image($field_name, $folder_name, $max_size = 2048, $allowed_types = 'jpg|jpeg|png|gif')
+	{
+		$CI =& get_instance();
+		
+		// Path upload
+		$upload_path = './assets/uploads/' . $folder_name . '/';
+		
+		// Buat folder jika belum ada
+		if (!is_dir($upload_path)) {
+			mkdir($upload_path, 0777, true);
+		}
+		
+		// Konfigurasi upload
+		$config['upload_path']   = $upload_path;
+		$config['allowed_types'] = $allowed_types;
+		$config['max_size']      = $max_size; // KB
+		$config['file_name']     = $folder_name . '_' . time();
+		$config['encrypt_name']  = FALSE;
+		$config['remove_spaces'] = TRUE;
+		
+		$CI->load->library('upload', $config);
+		
+		// Lakukan upload
+		if ($CI->upload->do_upload($field_name)) {
+			$upload_data = $CI->upload->data();
+			
+			return array(
+				'status' => TRUE,
+				'message' => 'Upload berhasil',
+				'file_path' => 'assets/uploads/' . $folder_name . '/' . $upload_data['file_name'],
+				'file_name' => $upload_data['file_name'],
+				'full_path' => $upload_data['full_path']
+			);
+		} else {
+			return array(
+				'status' => FALSE,
+				'message' => $CI->upload->display_errors('', ''),
+				'file_path' => NULL
+			);
+		}
+	}
 ?>
