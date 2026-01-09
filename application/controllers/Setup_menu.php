@@ -37,35 +37,44 @@ class Setup_menu extends CI_Controller {
       ),
       array(
         'id' => $start_id + 1,
+        'nama' => 'Kategori Perbaikan',
+        'link' => 'Kategori_perbaikan',
+        'class_icon' => NULL,
+        'is_parent' => '2',
+        'id_parent' => (string)$start_id,
+        'keterangan' => 'Data Master Kategori Perbaikan'
+      ),
+      array(
+        'id' => $start_id + 2,
         'nama' => 'Jenis Perbaikan',
-        'link' => 'Master_data/jenis_perbaikan',
+        'link' => 'Jenis_perbaikan',
         'class_icon' => NULL,
         'is_parent' => '2',
         'id_parent' => (string)$start_id,
         'keterangan' => 'Data Master Jenis Perbaikan'
       ),
       array(
-        'id' => $start_id + 2,
+        'id' => $start_id + 3,
         'nama' => 'Gejala Kerusakan',
-        'link' => 'Master_data/gejala_kerusakan',
+        'link' => 'Gejala_kerusakan',
         'class_icon' => NULL,
         'is_parent' => '2',
         'id_parent' => (string)$start_id,
         'keterangan' => 'Data Master Gejala Kerusakan'
       ),
       array(
-        'id' => $start_id + 3,
+        'id' => $start_id + 4,
         'nama' => 'Jenis Kerusakan',
-        'link' => 'Master_data/jenis_kerusakan',
+        'link' => 'Jenis_kerusakan',
         'class_icon' => NULL,
         'is_parent' => '2',
         'id_parent' => (string)$start_id,
         'keterangan' => 'Data Master Jenis Kerusakan'
       ),
       array(
-        'id' => $start_id + 4,
+        'id' => $start_id + 5,
         'nama' => 'Rekomendasi Perbaikan',
-        'link' => 'Master_data/rekomendasi_perbaikan',
+        'link' => 'Rekomendasi_perbaikan',
         'class_icon' => NULL,
         'is_parent' => '2',
         'id_parent' => (string)$start_id,
@@ -122,6 +131,14 @@ class Setup_menu extends CI_Controller {
         'id_role' => $r->id_role,
         'posisi' => '1',
         'urutan' => 4,
+        'level' => 2,
+        'id_parent' => $start_id
+      );
+      $menu_user_data[] = array(
+        'id_menu' => $start_id + 5,
+        'id_role' => $r->id_role,
+        'posisi' => '1',
+        'urutan' => 5,
         'level' => 2,
         'id_parent' => $start_id
       );

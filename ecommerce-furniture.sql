@@ -325,12 +325,12 @@ CREATE TABLE `kategori_jenis_perbaikan` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kategori utama jenis furniture';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kategori utama jenis furniture';
 
 /*Data for the table `kategori_jenis_perbaikan` */
 
 insert  into `kategori_jenis_perbaikan`(`id`,`nama_kategori`,`deskripsi`,`icon`,`urutan`,`status`,`created_at`,`updated_at`,`deleted_at`) values 
-(1,'Sofa','Perbaikan dan servis sofa berbagai ukuran dan model',NULL,1,'1','2026-01-09 20:33:36',NULL,NULL),
+(1,'Sofa','Perbaikan dan servis sofa berbagai ukuran dan model','',1,'1','2026-01-09 20:33:36','2026-01-09 14:24:50',NULL),
 (2,'Kursi Kantor','Perbaikan kursi kantor, gaming, dan kerja',NULL,2,'1','2026-01-09 20:33:36',NULL,NULL),
 (3,'Kursi Tamu','Perbaikan kursi tamu dan ruang tamu',NULL,3,'1','2026-01-09 20:33:36',NULL,NULL),
 (4,'Jok Kendaraan','Perbaikan jok mobil, motor, dan kendaraan lainnya',NULL,4,'1','2026-01-09 20:33:36',NULL,NULL),
@@ -524,7 +524,7 @@ CREATE TABLE `menu` (
   `id_parent` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `keterangan` varchar(100) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 /*Data for the table `menu` */
 
@@ -547,10 +547,11 @@ insert  into `menu`(`id`,`nama`,`link`,`class_icon`,`is_parent`,`id_parent`,`ket
 (16,'Laporan Pengiriman','/Order/laporan_pengiriman','fa fa-home','1','','Menu Laporan Pengiriman'),
 (17,'Service Order','/service_order','fa fa-tools','1',NULL,'Menu Service Order'),
 (18,'Sistem Rekomendasi','#','fa fa-cogs','1',NULL,'Menu Sistem Rekomendasi'),
-(19,'Jenis Perbaikan','Master_data/jenis_perbaikan',NULL,'2','18','Data Master Jenis Perbaikan'),
-(20,'Gejala Kerusakan','Master_data/gejala_kerusakan',NULL,'2','18','Data Master Gejala Kerusakan'),
-(21,'Jenis Kerusakan','Master_data/jenis_kerusakan',NULL,'2','18','Data Master Jenis Kerusakan'),
-(22,'Rekomendasi Perbaikan','Master_data/rekomendasi_perbaikan',NULL,'2','18','Data Master Rekomendasi Perbaikan');
+(19,'Kategori Perbaikan','Kategori_perbaikan',NULL,'2','18','Data Master Kategori Perbaikan'),
+(20,'Jenis Perbaikan','Jenis_perbaikan',NULL,'2','18','Data Master Jenis Perbaikan'),
+(21,'Gejala Kerusakan','Gejala_kerusakan',NULL,'2','18','Data Master Gejala Kerusakan'),
+(22,'Jenis Kerusakan','Jenis_kerusakan',NULL,'2','18','Data Master Jenis Kerusakan'),
+(23,'Rekomendasi Perbaikan','Rekomendasi_perbaikan',NULL,'2','18','Data Master Rekomendasi Perbaikan');
 
 /*Table structure for table `menu_user` */
 
@@ -569,7 +570,7 @@ CREATE TABLE `menu_user` (
   KEY `FK_menu_user_roles` (`id_role`) USING BTREE,
   CONSTRAINT `FK_menu_user_menu` FOREIGN KEY (`id_menu`) REFERENCES `menu` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `FK_menu_user_roles` FOREIGN KEY (`id_role`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 /*Data for the table `menu_user` */
 
@@ -597,10 +598,11 @@ insert  into `menu_user`(`id`,`id_menu`,`id_role`,`posisi`,`urutan`,`level`,`id_
 (23,17,'ADMIN','1',3,1,NULL,'2025-08-30 10:44:09','2025-08-30 10:44:09'),
 (24,17,'OWNER','1',4,1,NULL,'2025-08-30 10:44:21','2025-08-30 10:44:21'),
 (25,18,'OWNER','1',4,1,NULL,'2026-01-01 19:17:36','2026-01-01 19:17:36'),
-(26,19,'OWNER','1',1,2,18,'2026-01-01 19:17:36','2026-01-01 19:17:36'),
-(27,20,'OWNER','1',2,2,18,'2026-01-01 19:17:36','2026-01-01 19:17:36'),
-(28,21,'OWNER','1',3,2,18,'2026-01-01 19:17:36','2026-01-01 19:17:36'),
-(29,22,'OWNER','1',4,2,18,'2026-01-01 19:17:36','2026-01-01 19:17:36');
+(30,19,'OWNER','1',1,2,18,'2026-01-09 21:08:45','2026-01-09 21:08:45'),
+(31,20,'OWNER','1',2,2,18,'2026-01-09 21:08:45','2026-01-09 21:08:45'),
+(32,21,'OWNER','1',3,2,18,'2026-01-09 21:08:45','2026-01-09 21:08:45'),
+(33,22,'OWNER','1',4,2,18,'2026-01-09 21:08:45','2026-01-09 21:08:45'),
+(34,23,'OWNER','1',5,2,18,'2026-01-09 21:08:45','2026-01-09 21:08:45');
 
 /*Table structure for table `order_detail` */
 
