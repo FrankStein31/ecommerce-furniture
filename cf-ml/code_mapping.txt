@@ -1,0 +1,475 @@
+Kolom yang tersedia: ['no', 'ID Produk', 'Jenis Perbaikan', 'Gejala Kerusakan', 'Jenis Kerusakan ', 'Tingkat Kerusakan', 'Jumlah Diservis', 'Rekomendasi Perbaikan', 'Estimasi Biaya', 'Estimasi waktu (diagnosis)', 'Estimasi Waktu Pengerjaan']
+================================================================================
+TABEL KODE JENIS PERBAIKAN
+================================================================================
+| Kode | Jenis Perbaikan |
+|------|-----------------|
+| JP001 | Bantalan kursi minimalis |
+| JP002 | Jok mobil Avanza |
+| JP003 | Jok mobil Colt pickup |
+| JP004 | Jok mobil colt pick up |
+| JP005 | Jok mobil truk ragasa |
+| JP006 | Jok motor GL pro |
+| JP007 | Jok sepedah motor supra 125 |
+| JP008 | Kursi (L) sudut |
+| JP009 | Kursi Sofa 321 |
+| JP010 | Kursi kantor(putar) |
+| JP011 | Kursi maribet |
+| JP012 | Kursi sofa (L) atau sudut |
+| JP013 | Kursi sofa 211 kerang |
+| JP014 | Kursi tamu kayu gajahan |
+| JP015 | Kursi tamu kayu tigeran |
+| JP016 | Sofa bed |
+| JP017 | Springbed 120 x 20 x 200 |
+| JP018 | bantal minimalis |
+| JP019 | bantalan kursi minimalis |
+| JP020 | jok bego |
+| JP021 | jok mobil L 300 pick up |
+| JP022 | jok mobil avanza |
+| JP023 | jok mobil ayla |
+| JP024 | jok mobil kijang GX |
+| JP025 | jok mobil kijang extra |
+| JP026 | jok mobil kijang grand royal |
+| JP027 | jok mobil pick up cery |
+| JP028 | jok mobil sedan civik |
+| JP029 | jok mobil suzuki cary |
+| JP030 | jok mobil suzuki katana |
+| JP031 | jok motor AEROX  |
+| JP032 | jok motor RC |
+| JP033 | jok motor honda star |
+| JP034 | jok motor mega pro |
+| JP035 | jok motor suzuki ninja |
+| JP036 | jok motor vario 150 |
+| JP037 | jok sepeda motor PCX |
+| JP038 | jok sepeda motor honda GL pro  |
+| JP039 | jok sepeda motor honda V70 (ceker) |
+| JP040 | jok sepeda motor honda beat |
+| JP041 | jok sepeda motor honda scopy |
+| JP042 | jok sepeda motor honda supra x 125 |
+| JP043 | jok sepeda motor vario 125 |
+| JP044 | jok sepeda motor vega R |
+| JP045 | jok sepeda motor yamaha jupiter Z |
+| JP046 | jok sepedah motor FIZ R |
+| JP047 | jok sepedah motor N MAX |
+| JP048 | jok sepedah motor NMAX |
+| JP049 | jok sepedah motor V70 (cekeh) |
+| JP050 | jok sepedah motor Vega R |
+| JP051 | jok sepedah motor beat |
+| JP052 | jok sepedah motor grand |
+| JP053 | jok sepedah motor honda CBR |
+| JP054 | jok sepedah motor honda beat new |
+| JP055 | jok sepedah motor honda grand |
+| JP056 | jok sepedah motor honda grend |
+| JP057 | jok sepedah motor honda karisma |
+| JP058 | jok sepedah motor honda supra X 125 |
+| JP059 | jok sepedah motor jupiter Z |
+| JP060 | jok sepedah motor mio soul |
+| JP061 | jok sepedah motor scopy |
+| JP062 | jok sepedah motor shogun 110 |
+| JP063 | jok sepedah motor shogun 125 |
+| JP064 | jok sepedah motor supra fit |
+| JP065 | jok sepedah motor suzuki smash |
+| JP066 | jok sepedah motor vario |
+| JP067 | jok sepedah motor vario 110 |
+| JP068 | jok sepedah motor vario 150 |
+| JP069 | jok sepedah motor yamaha FIZ R |
+| JP070 | jok sepedah motor yamaha king |
+| JP071 | kasue spons (busa)120x200x20 |
+| JP072 | kasur baby 50x90x5 |
+| JP073 | kasur spons matras(olahraga) 100x200x15 |
+| JP074 | kasur spons(busa) ukuran 120x200x14 |
+| JP075 | kasur spons(busa) ukuran 180x200x20 |
+| JP076 | kasur springbed |
+| JP077 | kasur springbed no 1 ukuran 180x200x30 |
+| JP078 | kasur springbed no 2 ukuran 160x200x20 |
+| JP079 | kasur springbed no 3 ukuran 120x200x20 |
+| JP080 | kasur springbed no 3 ukuran 125x200x20 |
+| JP081 | kursi 321 model kipas |
+| JP082 | kursi dekor pengantin |
+| JP083 | kursi elephant chairs |
+| JP084 | kursi gajah |
+| JP085 | kursi kantor |
+| JP086 | kursi kantor putar |
+| JP087 | kursi kayu gajahan |
+| JP088 | kursi kayu kasandra |
+| JP089 | kursi lipat |
+| JP090 | kursi lipat elephant |
+| JP091 | kursi lipat kuliah |
+| JP092 | kursi makan |
+| JP093 | kursi maribet |
+| JP094 | kursi menjalin |
+| JP095 | kursi putar |
+| JP096 | kursi rias |
+| JP097 | kursi roda |
+| JP098 | kursi salon |
+| JP099 | kursi sofa 211 kerang |
+| JP100 | kursi sofa 321 kipas |
+| JP101 | kursi sofa L minimalis |
+| JP102 | kursi sofa valenci |
+| JP103 | kursi tamu (L) sudut minimalis |
+| JP104 | kursi tamu 321 jaguar |
+| JP105 | kursi tamu L sofa minimalis |
+| JP106 | kursi tamu gajahan |
+| JP107 | kursi tamu hongkongan |
+| JP108 | kursi tamu ligna |
+| JP109 | kursi tamu maribet |
+| JP110 | kursi tamu menjalin(jengki) |
+| JP111 | kursi tamu menthokan |
+| JP112 | kursi tamu panda |
+| JP113 | kursi tamu sofa tunggu |
+| JP114 | kursi tamu tigeran |
+| JP115 | kursi teras / kursi kayu |
+| JP116 | matras olahraga 100 x 15 x 200 |
+| JP117 | matras senam 50x5x150 |
+| JP118 | sofa lesehan |
+| JP119 | spring bed 160 x 20 x 200 |
+| JP120 | springbed 180 X 30 X 200 |
+
+================================================================================
+TABEL KODE GEJALA KERUSAKAN
+================================================================================
+| Kode | Gejala Kerusakan |
+|------|------------------|
+| G001 | Amblas |
+| G002 | Amblas ketika diduduki |
+| G003 | Cover terlihat sudah usang |
+| G004 | Goyang dan reyot, kain dicakar kucing |
+| G005 | Hidrolik turun, dan amblas |
+| G006 | Jok  depan bila di buka nyangkut pintu (cabin) |
+| G007 | Kerangka dalam dimakan rayap, kayu keropos, amblas |
+| G008 | Kurang nyaman di duduki |
+| G009 | Lipatan sandaran tidakberfungsi |
+| G010 | Rembes |
+| G011 | Spon ditipisin, terasa keras bila di duduki |
+| G012 | amblas |
+| G013 | amblas  |
+| G014 | amblas dan goyang ketika diduduki |
+| G015 | amblas dan reyot |
+| G016 | amblas dan sarung jok melipat |
+| G017 | amblas diduduki |
+| G018 | amblas diduduki, kendor |
+| G019 | amblas reyot |
+| G020 | amblas saat diduduki, kain jok warnanya pudar dan kusam |
+| G021 | amblas, dan berdebu |
+| G022 | amblas, jok berdebu |
+| G023 | amblas, kursi reyot |
+| G024 | amblas, tidak nyaman, pir menjuntai |
+| G025 | bocor atau rembes |
+| G026 | bocor/rembes  |
+| G027 | diduduki |
+| G028 | diduduki amblas |
+| G029 | diduduki amblas, kurang nyaman |
+| G030 | diduduki terasa panas, di bagian bawah sarung jok berdebu |
+| G031 | dinaiki terasa panas, dan bocor |
+| G032 | goyang atau reyot |
+| G033 | jok depan bila dibuka nyangkut pintu (cabin) |
+| G034 | kain terlihat pudar dan kusam |
+| G035 | kain terlihat retak dan hampir robek |
+| G036 | kain terlihat robek, dan spons terasa patah-patah |
+| G037 | kain terpal terlihat memar dan robek |
+| G038 | kena tekanan beban berat |
+| G039 | kendur dan amblas, warna kain pudar |
+| G040 | keras ketika di duduki |
+| G041 | kurang kenyal |
+| G042 | kurang nyaman di duduki ganjing, amblas, kain dicakar kucing |
+| G043 | kurang nyaman di pandang |
+| G044 | kurang nyaman diduduki dan amblas |
+| G045 | kurang nyaman ketika diduduki, terasa keras dan panas, dan amblas |
+| G046 | kurang nyaman saat diduduki, dan sarung jok usang |
+| G047 | kurang nyaman saat diduduki. |
+| G048 | kurang nyaman untuk tidur, amblas atau turun |
+| G049 | kurang nyaman untuk tidur, amblas ketengah |
+| G050 | lembek dan amblas |
+| G051 | oscar / imitasi sering kelipat bila di duduki |
+| G052 | pelanggan ingin kursinya terlihat baru lagi, bosan dengan model yang lama ingin mengubah modif kursi |
+| G053 | rembes |
+| G054 | rembes  |
+| G055 | rembes dan keras bila diduduki |
+| G056 | rembes dan licin dibagian depan jok |
+| G057 | rembes dan panas ketika diduduki |
+| G058 | rembes, diduduki keras |
+| G059 | rembes, dudukan keras |
+| G060 | rembes, keras,dan panas ketika diduduki |
+| G061 | reyot, amblas, berdebu, dan keras ketika diduduki |
+| G062 | saat mobil berjalan jok berbunyi / mengeluarkan suara |
+| G063 | sarung bantal kusam dan robek |
+| G064 | sarung kursi terlihat kusam, usang |
+| G065 | setelan naik turun tidak berfungsi |
+| G066 | sudah lama digunakan |
+| G067 | terasa keras bila di duduki dan kain jok robek |
+| G068 | terkena panas matahari |
+| G069 | terlihat usang, jok dudukan sering geser |
+| G070 | tidak ada kerusakan tetapi pelanggan ingin modifikasi jok |
+| G071 | tidak nyaman untuk tidur, pir menjuntai, amblas |
+| G072 | untuk tidur kurang nyaman |
+| G073 | warna kain terlihat pudar, warna kursi terlihat usang, dan di duduki keras |
+| G074 | warna kayu terlihat pudar |
+| G075 | warna kursi terlihat usang |
+
+================================================================================
+TABEL KODE JENIS KERUSAKAN
+================================================================================
+| Kode | Jenis Kerusakan |
+|------|-----------------|
+| JK001 |  oscar robek serta pecah-pecah dan pir dudukan putus |
+| JK002 | Hidrolik rusak, sarung jok retak/mengelupas, spons kempis |
+| JK003 | Karet / pir putus, kain robek |
+| JK004 | Karet kendor, busa kempes, kerangka dalam pecah, kain robek |
+| JK005 | Karet kendor, spon/busa kempes |
+| JK006 | Kerangka kayu dalam lapuk,kain /oscar robek, karet putus spons kempes |
+| JK007 | Mengecilkan / mengurangi lebar kerangka jok |
+| JK008 | Mengganti cover jok mobil |
+| JK009 | Sponnya tipis dan sarung joknya robek |
+| JK010 | Spons tipis dan kain jok robek |
+| JK011 | awalnya menjalin di ganti jok |
+| JK012 | bak dudukan jok pecah |
+| JK013 | busa lembek |
+| JK014 | busa lembek, kain sudah memar |
+| JK015 | cover/sarung jok pecah dan retak |
+| JK016 | dicakar kucing, spons hancur |
+| JK017 | hidrolik bocor |
+| JK018 | kain imitasi pecah-pecah, retak dan robek |
+| JK019 | kain kusam dan memar |
+| JK020 | kain memar |
+| JK021 | kain oscar robek dan retak-retak |
+| JK022 | kain robek |
+| JK023 | kain robek dan retak-retak |
+| JK024 | kain robek jahitan bagian tengah dan bagian samping |
+| JK025 | kain terpal memar dan robek |
+| JK026 | kaki roda ada yang pecah, kain robek di bagian samping |
+| JK027 | karet jok putus sponsnya hancur, kain joknya berdaki |
+| JK028 | karet kendur, spons mulai kempes, kain robek |
+| JK029 | karet kendur, spons tipis, warna kain pudar |
+| JK030 | karet putus dan ada yang lepas, isian dalam kursi tidak murni spons melainkan kain perca |
+| JK031 | karet putus, dalam kursi berisi kain perca, sarung jok robek, kerangka luar warnanya pudar |
+| JK032 | karet putus, dan spons kempes |
+| JK033 | karet putus, kayu ada yang patah, sponsnya campuran kain perca, sarung atau cover kursi robek |
+| JK034 | karet putus, kerangka kayu dalam lapuk |
+| JK035 | karet putus, spons kempes, kain kumal |
+| JK036 | karet putus, spons lembek, kain memar, kayu dimakan nonor |
+| JK037 | karet putus, spons lembek, kain oscar robek |
+| JK038 | karet/pir putus, spons lembek, kain memar dan robek, kerangka kayu luar warna / pelitur pudar dan berdaki |
+| JK039 | kayu kerangka dimakan bubuk, patah spons kempes |
+| JK040 | kayu keropos, karet lepas, dan amblas |
+| JK041 | kayu lapuk, karet putus, dan kain memar |
+| JK042 | kayu lapuk, karet putus, spons campur kain perca, kain robek |
+| JK043 | kayu patah, karet putus, spons kempes, dan kain kusam atau putar |
+| JK044 | kerangka dalam ada yang putus |
+| JK045 | kerangka dalam dimakan bubuk kayu, kerangka patah, karet putus, spon lembek, kain robek |
+| JK046 | kulit/oscar mengelupas, spons kempes |
+| JK047 | meja patah bagian ujung, sarung jok robek |
+| JK048 | menjalin putus-putus |
+| JK049 | modifikasi |
+| JK050 | oscar kain robek |
+| JK051 | oscar pecah-pecah, dan robek |
+| JK052 | oscar retak-retak, spons kempes |
+| JK053 | paku lepas, dan kayu lem patah |
+| JK054 | pasak kerangka, kendor, hampir lepas, spons bercampur dengan kain perca, karet banyak yang putus, dan kain robek |
+| JK055 | pir dalam ada yang putus, spons memar karena usang, sarung jok juga robek |
+| JK056 | pir kendur kurang kenyal |
+| JK057 | pir lembek kurangnya penyangga, dan kainnya sudah pipih atau memar |
+| JK058 | pir putus menembus kain, spins hancur |
+| JK059 | pir putus, busa terlalu tipis, kain robek, dan memar |
+| JK060 | pir yang horizontal ada yang putus, M penyangga putus |
+| JK061 | pir/karetnya putus, kain/oscar robek, spons kempes |
+| JK062 | plat dalam putus, kain kotor dan memar |
+| JK063 | reclining seat rusak |
+| JK064 | retak-retak |
+| JK065 | retak-retak pada bagian atas jok |
+| JK066 | robek  |
+| JK067 | robek karena dicakar kucing |
+| JK068 | robek karena dicakar kucing, |
+| JK069 | robek pada bagian kanan dan kiri |
+| JK070 | sarung jok bagian kanan dan kiri robek, dan spons tipis |
+| JK071 | sarung jok bagian samping robek |
+| JK072 | sarung jok bocor dan robek, spons hancur dan plat dudukan joknya keropos |
+| JK073 | sarung jok bocor, robek dan spons  |
+| JK074 | sarung jok di cakar kucing |
+| JK075 | sarung jok melipat bagian samping |
+| JK076 | sarung jok pecah karena sering terlipat |
+| JK077 | sarung jok pecar/robek bagian samping kiri dan kanan |
+| JK078 | sarung jok reetak/pecah, spon ditipisin |
+| JK079 | sarung jok retak |
+| JK080 | sarung jok retak dan robek |
+| JK081 | sarung jok retak-retak |
+| JK082 | sarung jok robek |
+| JK083 | sarung jok robek bagian depan dan atas, spon rusak |
+| JK084 | sarung jok robek bagian samping melipat |
+| JK085 | sarung jok robek depan, samping dan belakang serta spons tidak rata |
+| JK086 | sarung jok robek di cakar kucing |
+| JK087 | sarung jok robek dicakar kucing |
+| JK088 | sarung jok robek karena terkena benda tajam |
+| JK089 | sarung jok robek pada jahitan tengah |
+| JK090 | sarung jok robek pada jahitan, spon kempes |
+| JK091 | sarung jok robek samping |
+| JK092 | sarung jok robek samping karena melipat, spons jok kurang tinggi, sarung jok robek |
+| JK093 | sarung jok robek, sponnya lubang |
+| JK094 | sarung jok robek, spons tipis dan geripis |
+| JK095 | sarung jok sudah pudar dan memar |
+| JK096 | sarung jok, retak dan spons tipis |
+| JK097 | sarung kursi memar dan kusam |
+| JK098 | sebagian pir ulir putus, pir penyangga yang tepi putus |
+| JK099 | sebagian pir yang vertikal putus, pir yang horizontal(ulir) kendur, kain kotor dan bercak |
+| JK100 | spin tipis bekas ditipisin |
+| JK101 | spons ditipiskan |
+| JK102 | spons hancur, kain robek, dan kain putus |
+| JK103 | spons hancur, sarung jok robek |
+| JK104 | spons kempes dan hancur  |
+| JK105 | spons kempes dan kain robek |
+| JK106 | spons kempes dan lembek sarung jok memar |
+| JK107 | spons kempes, dan menipis, sarung jok robek pada jahitan |
+| JK108 | spons kempes, dan pir lepas |
+| JK109 | spons kempes, kain robek |
+| JK110 | spons kempis, kaki kursi ada yang rusak / pecah kain robek |
+| JK111 | spons lembek, kain retak-retak |
+| JK112 | spons patah-patah, dan kain robek |
+| JK113 | spons tipis dan sarung jok robek bagian samping |
+| JK114 | spons tipis dan sarung jok robek, dan retak |
+| JK115 | spons tipis, lembek, kayu kerangka ada yang patah, imitasi |
+| JK116 | triplek dalam lapuk, baut lepas, imitasinya robek |
+| JK117 | triplek untuk tumpuan busa lapuk, imitasinya robek, sponsnya tipis dan kempes |
+| JK118 | viber dudukan jok patah, spons tipis, dan sarung jok / cover jok robek |
+| JK119 | warna kain oscar pudar, finishing cat/plitur kayu kursi, spon kempis |
+| JK120 | warna kain pudar dan robek |
+| JK121 | warna kain pudar, dan kotor, spons lembek |
+| JK122 | warna kain/oscar pudar, kotor |
+| JK123 | warna kayu pudar |
+| JK124 | warna sarung kusam dan robek |
+
+================================================================================
+TABEL KODE REKOMENDASI PERBAIKAN
+================================================================================
+| Kode | Rekomendasi Perbaikan |
+|------|------------------------|
+| R001 | Ganti cover jok dan menipiskan sponnya |
+| R002 | Ganti cover variasi bahan carvero |
+| R003 | Ganti karet / pir, kain / oscar, tambah spon, tutup bawah dan kaki |
+| R004 | Ganti pir horizontal, penyangga samping (M) dan penyangga pir kepompong  |
+| R005 | Ganti spons standar, dan sarung jok |
+| R006 | Ganti spons tebal 7 cm |
+| R007 | Mengencangkan & tambah karet, tambah spons |
+| R008 | Nambah karet, ganti pir yang putus, tambah spons dan ganti oscar yang baik. |
+| R009 | Servis hidrolik, ganti sarung jok, tambah spons |
+| R010 | Tambah spon jadi ukuran standar dan ganti sarung yang kualitas baik |
+| R011 | ganti bak dudukan jok merk nasita |
+| R012 | ganti cover jok dan tambah spons |
+| R013 | ganti cover jok variasi |
+| R014 | ganti cover sarung jok yang baik |
+| R015 | ganti dan tambah anyaman karet, ganti isi dalam kursi dengan spons murni, ganti kain sesuai pilihan konsumen, pelitur atau cat ulang |
+| R016 | ganti dan tambah karet, merapatkan anyaman karet, ganti spons baru |
+| R017 | ganti dan tambah karet, merapatkan anyaman karet, tambah spons, ganti kain dengan oscar  |
+| R018 | ganti dan tambah rapat anyaman karet jok, ganti spons dan kain jok |
+| R019 | ganti kain |
+| R020 | ganti kain beludru |
+| R021 | ganti kain oscar |
+| R022 | ganti kain terpal |
+| R023 | ganti karet tambah spons |
+| R024 | ganti karet yang putus, tambah spons, dan ganti kain oscar |
+| R025 | ganti karet, ganti spons, dan ganti sarung oscar |
+| R026 | ganti karet, pir yang putus dan menambah rapat anyaman karet, tambah spons, ganti kain dan mengecat/pelitur ulang |
+| R027 | ganti kayu dan ganti karet |
+| R028 | ganti kayu kerangka dalam, ganti karet dan ganti kain |
+| R029 | ganti kayu lem dengan yang tebal, reng pengga atau sikon |
+| R030 | ganti kayu yang putus, tambah spons, tambah karet, dan ganti kain kursi |
+| R031 | ganti kayu, ganti karet, ganti spons dudukan, dan sandaran, ganti kain sarung kursi |
+| R032 | ganti kayu, ganti karet, ganti spons, ganti kain dan cat/plitur ulang |
+| R033 | ganti kerangka dalam yang panjang, tambah spons, tambah karet, dan ganti kain full, pengecatan atau plitur ulang |
+| R034 | ganti kerangka dalam, ganti karet yang putus dan menambah serta merapatkan anyaman karet |
+| R035 | ganti oscar |
+| R036 | ganti oscar carvero dan tambah spons  |
+| R037 | ganti oscar dan tambah spons |
+| R038 | ganti oscar dengan bahan kualitas baik |
+| R039 | ganti oscar yang kualitas baik |
+| R040 | ganti oscar, tambah spons |
+| R041 | ganti oscar, tambah spons dan plitur ulang kayu kursi |
+| R042 | ganti papan meja dan ganti sarung jok  |
+| R043 | ganti pir ulir dan pir vertikal serta memberi spons kepompong sebagai penyangga untuk menambah kekuatan pir vertikal dan mengganti kain springbed |
+| R044 | ganti pir ulir, ganti pir penyangga bagian tepi, tambah alas peredam dan tambah spons |
+| R045 | ganti pir yang putus, ganti spons yang baru, dan ganti sarung jok dengan kualitas baik |
+| R046 | ganti pir yang putus, ganti spons, dan ganti kain |
+| R047 | ganti pir, tambah spons, ganti kain, tambah spons kepompong (spons keras penyangga) |
+| R048 | ganti plat jok, ganti spons dan hanti cover / sarung jok  |
+| R049 | ganti plat, pir dan ganti sarung oscar 2 dudukan kanan dan kiri |
+| R050 | ganti reclining seat dan mengelas kerangka yang rapuh |
+| R051 | ganti sarung / cover jok kualitas sedang |
+| R052 | ganti sarung dan ganti spon standar |
+| R053 | ganti sarung dan tambah spons distandarkan |
+| R054 | ganti sarung jok |
+| R055 | ganti sarung jok NMAX yang baik |
+| R056 | ganti sarung jok dan tambal spons yang cekung |
+| R057 | ganti sarung jok kualitas baik |
+| R058 | ganti sarung jok kualitas biasa |
+| R059 | ganti sarung jok kualitas original |
+| R060 | ganti sarung jok kualitas sedang |
+| R061 | ganti sarung jok kualitas sedang  |
+| R062 | ganti sarung jok kualitas sedang dan tambal spons yang berlubang |
+| R063 | ganti sarung jok kw menengah polos hitam |
+| R064 | ganti sarung jok motor vario ori |
+| R065 | ganti sarung jok ori |
+| R066 | ganti sarung jok original |
+| R067 | ganti sarung jok scopy |
+| R068 | ganti sarung jok standar |
+| R069 | ganti sarung jok variasi  |
+| R070 | ganti sarung jok yang biasa dan meninggikan spons bagian ujung depan |
+| R071 | ganti sarung jok/cover jok  |
+| R072 | ganti sarung kain |
+| R073 | ganti sarung polos hitam kualitas menengah |
+| R074 | ganti spon baru dan sarung jok baru yang kualitas baik |
+| R075 | ganti spons dan ganti sarung jok yang kualitas baik |
+| R076 | ganti spons standar |
+| R077 | ganti spons yang kenyal dan mengganti oscar  |
+| R078 | ganti spons yang kualitas baik kenyal dan lentur |
+| R079 | ganti spons, ganti kain(oscar) dan tambah karet |
+| R080 | ganti spons, ganti karet, dan kain oscar |
+| R081 | ganti spons, ganti sarung jok yang baik |
+| R082 | ganti triplek serta mur dan baut, ganti oscar dan tambah spons |
+| R083 | ganti triplek serta mur dan baut, ganti spons dan ganti oscar (kalep sintetis) |
+| R084 | ganti tutup oscar dan tambah spons |
+| R085 | ganti tutup standar ori |
+| R086 | ganti tutup yang semi |
+| R087 | ganti viber dudukan jok motor, tambah spons dan ganti sarung jok  |
+| R088 | jasa pasang sarung jok, pelanggan bawa sarung jok sendiri |
+| R089 | membongkar jok dan mengelas kerangka besi dan memasang kembali |
+| R090 | membuat kerangka jok dalam, mengganti karet, mengganti spons dan mengganti kain(oscar) |
+| R091 | memperbaiki pompa hidrolik, tangki (reservoir) selang dan pipa, katup kontrol (valve) silinder hidrolik (aktuator) dan fluida hidrolik |
+| R092 | menambah spons dudukan jok mobil dan mengganti cover jok dudukannya saja |
+| R093 | menambah spons yang kenyal dan mengganti sarung jok kualitas baik |
+| R094 | mengelas pir yang lepas dan menambah spons |
+| R095 | mengelas plat, menambah spons baru yang kenyal dan mengganti kain jok dengan oscar kualitas baik |
+| R096 | mengencangkan dan menambah karet, ganti kayu yang patah, nambah spons, ganti kain kaulitas baik |
+| R097 | mengencangkan karet mengganti karet yang putus, merapatkan anyaman karet, ganti dan tambah spons yang tebal, dan ganti kain |
+| R098 | mengencangkan karet/pir, tambah karet, tambah spons, dan mengganti kain |
+| R099 | mengencangkan seua pir ulir dan memberi spons kepompong pada pi yang vertikal |
+| R100 | mengganti imitasi |
+| R101 | mengganti kain dan tambah spons |
+| R102 | mengganti kain dengan motif baru dan menambah spons yang kenyal |
+| R103 | mengganti kain katun |
+| R104 | mengganti kain oscar yang kualitas baik |
+| R105 | mengganti kain terpal unica |
+| R106 | mengganti karet dan anyamannya dirapatkan, mengganti kayu yang patah, mengganti spons yang baru, dan ganti oscar |
+| R107 | mengganti kayu kerangka dalam , tambah spons, karet, dan ganti kain/oscar kualitas baik |
+| R108 | mengganti kayu kerangka dalam yang patah, tambah spons tebal, ganti kain kulit imitasi dengan oscar yang baik mengganti tutup bawah |
+| R109 | mengganti menjalin dengan modifikasi  jadi jok, diberi anyaman karet sebagai ganti menjalinnya, memberi spons dan membungkus kain / oscar dan pengecatan atau plitur ulang |
+| R110 | mengganti pasak yang baru pada kerangka kayu, ganti spons, ganti kain |
+| R111 | menipiskan spons |
+| R112 | menyulam / ganti kain yang robek dgn warna yang serupa, dan ganti kaki roda sofa |
+| R113 | perbanyak kepompong atau spons penyangga pir vertikal, dan ganti kain |
+| R114 | plitur atau cat ulang kayu kursi |
+| R115 | tambah karet, tambah spons yang baru, ganti kain oscar, dan ganti kain tutup bawah kursi, dan ganti kaki kursi |
+| R116 | tambah spons 2 cm dan ganti sarung jok original |
+| R117 | tambah spons atas dan bawar, serta ganti sarung (kain katun) |
+| R118 | tambah spons dan ganti kain oscar |
+| R119 | tambah spons dan ganti sarung jok kualitas baik |
+| R120 | tambah spons dan ganti sarung kok semi ori |
+| R121 | tambah spons di body sepedah motor race |
+| R122 | tambah spons tebal dan ganti sarung jok  |
+| R123 | tambal spons bagian atas dan bawah, ganti kain terpal |
+| R124 | tambal spons yang lubang dan ganti sarung ori |
+
+================================================================================
+SUMMARY
+================================================================================
+Total Jenis Perbaikan: 120
+Total Gejala Kerusakan: 75
+Total Jenis Kerusakan: 124
+Total Rekomendasi: 124

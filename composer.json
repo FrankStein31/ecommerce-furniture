@@ -1,0 +1,9 @@
+{
+    "name": "ecommerce/ecommerce-furniture",
+    "type": "project",
+    "homepage": "https://codeigniter.com",
+    "license": "MIT",
+    "require": {
+        "dompdf/dompdf": "^1.2"
+    }
+}
