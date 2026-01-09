@@ -9,6 +9,8 @@
 <link rel="stylesheet" type="text/css" href="<?= base_url('assets/all/sweetalert2/sweetalert2.min.css') ?>">
 <link rel="stylesheet" type="text/css" href="<?= base_url('assets/all/datepicker/bootstrap-datepicker3.min.css') ?>">
 <link rel="stylesheet" href="<?=base_url()?>assets/all/select2/select2.min.css">
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
 <!-- JS -->
 <script src="<?= base_url('assets/vendors/js/vendor.bundle.base.js') ?>"></script>
 <script src="<?= base_url('assets/all/datepicker/bootstrap-datepicker.min.js') ?>"></script>
