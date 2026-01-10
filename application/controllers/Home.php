@@ -631,12 +631,56 @@ class Home extends CI_Controller
       redirect('home/rekomendasi?step=4');
     }
     
+    // Get data lengkap untuk tampilan riwayat
+    $id_kategori = $diagnosis_data['id_kategori'] ?? 0;
+    $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? 0;
+    
+    // Load kategori yang dipilih
+    $kategori = $this->db->get_where('kategori_jenis_perbaikan', array('id' => $id_kategori))->row();
+    
+    // Load jenis perbaikan yang dipilih
+    $jenis_perbaikan = $this->db->get_where('jenis_perbaikan', array('id' => $id_jenis_perbaikan))->row();
+    
+    // Load semua gejala yang dijawab YA
+    $gejala_dipilih = array();
+    foreach ($diagnosis_data['jawaban_gejala'] as $id_gejala => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $gejala_item = $this->db->get_where('gejala_kerusakan', array('id' => $id_gejala))->row();
+        if ($gejala_item) {
+          $gejala_dipilih[] = array(
+            'data' => $gejala_item,
+            'cf_value' => floatval($jawab['cf_value']),
+            'cf_persen' => floatval($jawab['cf_value']) * 100
+          );
+        }
+      }
+    }
+    
+    // Load semua kerusakan yang dijawab YA
+    $kerusakan_dipilih = array();
+    foreach ($diagnosis_data['jawaban_kerusakan'] as $id_kerusakan => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $kerusakan_item = $this->db->get_where('jenis_kerusakan', array('id' => $id_kerusakan))->row();
+        if ($kerusakan_item) {
+          $kerusakan_dipilih[] = array(
+            'data' => $kerusakan_item,
+            'cf_value' => floatval($jawab['cf_value']),
+            'cf_persen' => floatval($jawab['cf_value']) * 100
+          );
+        }
+      }
+    }
+    
     // Hitung CF untuk rekomendasi
     $hasil_cf = $this->hitung_certainty_factor($diagnosis_data);
     
     $data['title'] = "Hasil Diagnosis | " . $this->apl['nama_sistem'];
     $data['current_step'] = 5;
     $data['diagnosis_data'] = $diagnosis_data;
+    $data['kategori'] = $kategori;
+    $data['jenis_perbaikan'] = $jenis_perbaikan;
+    $data['gejala_dipilih'] = $gejala_dipilih;
+    $data['kerusakan_dipilih'] = $kerusakan_dipilih;
     $data['hasil_cf'] = $hasil_cf;
     $data['content'] = "home/rekomendasi.php";
     $this->load->view('frontend/template_produk', $data);
@@ -677,24 +721,51 @@ class Home extends CI_Controller
   {
     $jawaban_gejala = $diagnosis_data['jawaban_gejala'] ?? array();
     $jawaban_kerusakan = $diagnosis_data['jawaban_kerusakan'] ?? array();
+    $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? 0;
     
-    // Get semua rekomendasi aktif dengan kerusakan terkait
+    // Get gejala yang dijawab YA
+    $gejala_ya = array();
+    foreach ($jawaban_gejala as $id_gejala => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $gejala_ya[] = $id_gejala;
+      }
+    }
+    
+    // Get kerusakan yang dijawab YA
+    $kerusakan_ya = array();
+    foreach ($jawaban_kerusakan as $id_kerusakan => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $kerusakan_ya[] = $id_kerusakan;
+      }
+    }
+    
+    if (empty($gejala_ya) || empty($kerusakan_ya)) {
+      return array();
+    }
+    
+    // STEP 1: Cari rekomendasi yang terkait dengan kerusakan yang dipilih
+    $gejala_ids_str = implode(',', $gejala_ya);
+    $kerusakan_ids_str = implode(',', $kerusakan_ya);
+    
     $rekomendasi_list = $this->db->query("
-      SELECT rp.*, GROUP_CONCAT(DISTINCT rrjk.id_jenis_kerusakan) as kerusakan_ids
+      SELECT DISTINCT rp.*, 
+             GROUP_CONCAT(DISTINCT rrjk.id_jenis_kerusakan) as kerusakan_ids,
+             COUNT(DISTINCT rrjk.id_jenis_kerusakan) as jumlah_relasi
       FROM rekomendasi_perbaikan rp
-      LEFT JOIN relasi_rekomendasi_jenis_kerusakan rrjk ON rp.id = rrjk.id_rekomendasi_perbaikan
-      WHERE rp.status = '1'
+      INNER JOIN relasi_rekomendasi_jenis_kerusakan rrjk ON rp.id = rrjk.id_rekomendasi_perbaikan
+      WHERE rp.status = '1' 
+        AND rrjk.id_jenis_kerusakan IN ($kerusakan_ids_str)
       GROUP BY rp.id
-      ORDER BY rp.cf_value DESC
+      ORDER BY jumlah_relasi DESC, rp.cf_value DESC
     ")->result();
     
     $hasil = array();
     
     foreach ($rekomendasi_list as $rekomendasi) {
-      // CF dari expert (MB - MD dari database)
+      // CF dari expert (dari database)
       $cf_expert = floatval($rekomendasi->cf_value);
       
-      // CF gabungan dari gejala
+      // STEP 2: Hitung CF gabungan dari gejala yang dijawab YA
       $cf_gejala = 0;
       $count_gejala_ya = 0;
       foreach ($jawaban_gejala as $id_gejala => $jawab) {
@@ -710,10 +781,10 @@ class Home extends CI_Controller
         }
       }
       
-      // CF gabungan dari kerusakan
+      // STEP 3: Hitung CF gabungan dari kerusakan yang dijawab YA
       $cf_kerusakan = 0;
       $count_kerusakan_ya = 0;
-      $kerusakan_match = false;
+      $kerusakan_match_count = 0;
       
       $kerusakan_ids_array = explode(',', $rekomendasi->kerusakan_ids);
       
@@ -721,9 +792,9 @@ class Home extends CI_Controller
         if ($jawab['jawaban'] == 'ya') {
           $cf_user = floatval($jawab['cf_value']);
           
-          // Cek apakah kerusakan ini match dengan rekomendasi
+          // Hitung berapa banyak kerusakan yang match
           if (in_array($id_kerusakan, $kerusakan_ids_array)) {
-            $kerusakan_match = true;
+            $kerusakan_match_count++;
           }
           
           if ($count_kerusakan_ya == 0) {
@@ -735,32 +806,28 @@ class Home extends CI_Controller
         }
       }
       
-      // Hitung CF total dengan rumus Certainty Factor
-      // CF(H,E) = CF(H) * max(CF(E1), CF(E2), ...) untuk sequential
-      // atau CF(H,E) = CF(H) * CF(E) untuk parallel evidence
+      // STEP 4: Kombinasi CF Evidence (rata-rata weighted)
+      // Kerusakan lebih penting (70%) daripada gejala (30%)
+      $cf_evidence = ($cf_kerusakan * 0.7) + ($cf_gejala * 0.3);
       
-      $cf_evidence = max($cf_gejala, $cf_kerusakan);
+      // STEP 5: CF Total = CF Expert × CF Evidence
+      $cf_total = $cf_expert * $cf_evidence;
       
-      if ($cf_evidence > 0) {
-        // CF final = CF expert * CF evidence
-        $cf_total = $cf_expert * $cf_evidence;
-        
-        // Bonus jika kerusakan match
-        if ($kerusakan_match) {
-          $cf_total = $cf_total + (0.1 * (1 - $cf_total));
-        }
-      } else {
-        $cf_total = 0;
-      }
+      // STEP 6: Bonus untuk match rate
+      $match_percentage = $kerusakan_match_count / max(1, count($kerusakan_ya));
+      $bonus = $match_percentage * 0.15; // Max bonus 15%
+      $cf_total = min(1.0, $cf_total + ($bonus * (1 - $cf_total)));
       
-      // Hanya tampilkan yang memiliki CF > 0.1 (10%)
-      if ($cf_total > 0.1) {
+      // Hanya tampilkan yang memiliki CF > 0.15 (15%)
+      if ($cf_total > 0.15) {
         $hasil[] = array(
           'rekomendasi' => $rekomendasi,
           'cf_score' => $cf_total,
           'confidence' => $cf_total * 100,
           'cf_gejala' => $cf_gejala,
-          'cf_kerusakan' => $cf_kerusakan
+          'cf_kerusakan' => $cf_kerusakan,
+          'match_count' => $kerusakan_match_count,
+          'match_percentage' => $match_percentage * 100
         );
       }
     }

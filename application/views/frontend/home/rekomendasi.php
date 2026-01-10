@@ -557,61 +557,172 @@ $diagnosis_data = $this->session->userdata('diagnosis_data') ?? array();
 
       <?php elseif ($current_step == 5): ?>
         <!-- STEP 5: HASIL DIAGNOSIS -->
-        <div class="text-center mb-3">
+        <div class="text-center mb-4">
           <h4><i class="fa fa-trophy"></i> Hasil Diagnosis & Rekomendasi</h4>
-          <p class="text-muted mb-3" style="font-size: 13px;">Berikut adalah rekomendasi perbaikan untuk furniture Anda</p>
+          <p class="text-muted mb-3" style="font-size: 13px;">Berikut adalah hasil diagnosis lengkap untuk furniture Anda</p>
         </div>
 
-        <?php if(!empty($hasil_cf)): ?>
-          <?php foreach($hasil_cf as $index => $item): ?>
-            <div class="result-card">
-              <div class="d-flex align-items-start">
-                <div class="result-rank"><?= $index + 1 ?></div>
-                <div class="flex-grow-1">
-                  <h5 style="font-size: 16px; margin-bottom: 8px;"><?= $item['rekomendasi']->nama_rekomendasi ?></h5>
-                  <p class="text-muted mb-2" style="font-size: 13px;"><?= $item['rekomendasi']->deskripsi_rekomendasi ?></p>
-                  
-                  <div class="row">
-                    <div class="col-md-4 mb-2">
-                      <div style="font-size: 13px;">
-                        <i class="fa fa-chart-line text-success"></i>
-                        <strong>Confidence:</strong>
-                        <span class="badge badge-success ml-1" style="font-size: 12px;">
-                          <?= number_format($item['confidence'], 1) ?>%
+        <!-- RIWAYAT DIAGNOSIS -->
+        <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <h5 style="font-size: 15px; font-weight: 700; margin-bottom: 15px; color: #333;">
+            <i class="fa fa-clipboard-list"></i> Riwayat Diagnosis
+          </h5>
+          
+          <!-- Kategori -->
+          <div class="mb-3 pb-3" style="border-bottom: 1px solid #eee;">
+            <div class="d-flex align-items-start">
+              <div style="min-width: 140px;">
+                <strong style="font-size: 13px;"><i class="fa fa-tag text-primary"></i> Kategori:</strong>
+              </div>
+              <div>
+                <span style="font-size: 13px;"><?= isset($kategori) ? $kategori->nama_kategori : '-' ?></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Jenis Perbaikan -->
+          <div class="mb-3 pb-3" style="border-bottom: 1px solid #eee;">
+            <div class="d-flex align-items-start">
+              <div style="min-width: 140px;">
+                <strong style="font-size: 13px;"><i class="fa fa-wrench text-info"></i> Jenis Perbaikan:</strong>
+              </div>
+              <div>
+                <span style="font-size: 13px;"><?= isset($jenis_perbaikan) ? $jenis_perbaikan->nama_jenis_perbaikan : '-' ?></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Gejala -->
+          <div class="mb-3 pb-3" style="border-bottom: 1px solid #eee;">
+            <div class="d-flex align-items-start">
+              <div style="min-width: 140px;">
+                <strong style="font-size: 13px;"><i class="fa fa-question-circle text-warning"></i> Gejala Dipilih:</strong>
+              </div>
+              <div class="flex-grow-1">
+                <?php if(isset($gejala_dipilih) && !empty($gejala_dipilih)): ?>
+                  <?php foreach($gejala_dipilih as $g): ?>
+                    <div class="mb-2" style="font-size: 12px;">
+                      <span class="badge badge-warning" style="font-size: 10px;"><?= $g['data']->kode_gejala ?></span>
+                      <span><?= $g['data']->nama_gejala ?></span>
+                      <span class="badge badge-light ml-1" style="font-size: 10px;">CF: <?= number_format($g['cf_persen'], 0) ?>%</span>
+                    </div>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <span class="text-muted" style="font-size: 12px;">Tidak ada</span>
+                <?php endif; ?>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Kerusakan -->
+          <div class="mb-0">
+            <div class="d-flex align-items-start">
+              <div style="min-width: 140px;">
+                <strong style="font-size: 13px;"><i class="fa fa-exclamation-triangle text-danger"></i> Kerusakan Terdeteksi:</strong>
+              </div>
+              <div class="flex-grow-1">
+                <?php if(isset($kerusakan_dipilih) && !empty($kerusakan_dipilih)): ?>
+                  <?php foreach($kerusakan_dipilih as $k): ?>
+                    <div class="mb-2" style="font-size: 12px;">
+                      <span class="badge badge-danger" style="font-size: 10px;"><?= $k['data']->kode_kerusakan ?></span>
+                      <span><?= $k['data']->nama_jenis_kerusakan ?></span>
+                      <span class="badge badge-light ml-1" style="font-size: 10px;">CF: <?= number_format($k['cf_persen'], 0) ?>%</span>
+                      <span class="badge badge-<?= $k['data']->tingkat_kerusakan == 'berat' ? 'danger' : ($k['data']->tingkat_kerusakan == 'sedang' ? 'warning' : 'info') ?> ml-1" style="font-size: 10px;">
+                        <?= ucfirst($k['data']->tingkat_kerusakan) ?>
+                      </span>
+                    </div>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <span class="text-muted" style="font-size: 12px;">Tidak ada</span>
+                <?php endif; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REKOMENDASI PERBAIKAN -->
+        <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <h5 style="font-size: 15px; font-weight: 700; margin-bottom: 15px; color: #333;">
+            <i class="fa fa-lightbulb-o"></i> Rekomendasi Perbaikan
+          </h5>
+          
+          <?php if(!empty($hasil_cf)): ?>
+            <?php foreach($hasil_cf as $index => $item): ?>
+              <div class="result-card">
+                <div class="d-flex align-items-start">
+                  <div class="result-rank"><?= $index + 1 ?></div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h5 style="font-size: 16px; margin-bottom: 0;"><?= $item['rekomendasi']->nama_rekomendasi ?></h5>
+                      <div>
+                        <span class="badge badge-success" style="font-size: 12px; padding: 5px 10px;">
+                          <i class="fa fa-chart-line"></i> <?= number_format($item['confidence'], 1) ?>%
                         </span>
                       </div>
                     </div>
-                    <div class="col-md-4 mb-2">
-                      <div style="font-size: 13px;">
-                        <i class="fa fa-money-bill text-primary"></i>
-                        <strong>Biaya:</strong>
-                        <span class="ml-1">Rp <?= number_format($item['rekomendasi']->biaya_estimasi, 0, ',', '.') ?></span>
+                    
+                    <p class="text-muted mb-2" style="font-size: 13px;"><?= $item['rekomendasi']->deskripsi_rekomendasi ?></p>
+                    
+                    <div class="row mb-2">
+                      <div class="col-md-4 mb-2">
+                        <div style="font-size: 12px;">
+                          <i class="fa fa-money-bill-wave text-primary"></i>
+                          <strong>Biaya:</strong>
+                          <div class="mt-1">
+                            <span class="badge badge-primary">Rp <?= number_format($item['rekomendasi']->biaya_estimasi, 0, ',', '.') ?></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mb-2">
+                        <div style="font-size: 12px;">
+                          <i class="fa fa-clock text-warning"></i>
+                          <strong>Durasi:</strong>
+                          <div class="mt-1">
+                            <span class="badge badge-warning"><?= $item['rekomendasi']->durasi_perbaikan ?> hari</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mb-2">
+                        <div style="font-size: 12px;">
+                          <i class="fa fa-flag text-info"></i>
+                          <strong>Prioritas:</strong>
+                          <div class="mt-1">
+                            <span class="badge badge-<?= $item['rekomendasi']->tingkat_prioritas == 'tinggi' ? 'danger' : ($item['rekomendasi']->tingkat_prioritas == 'sedang' ? 'warning' : 'info') ?>">
+                              <?= ucfirst($item['rekomendasi']->tingkat_prioritas) ?>
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-4 mb-2">
-                      <div style="font-size: 13px;">
-                        <i class="fa fa-clock-o text-warning"></i>
-                        <strong>Durasi:</strong>
-                        <span class="ml-1"><?= $item['rekomendasi']->durasi_perbaikan ?> hari</span>
+                    
+                    <?php if($item['rekomendasi']->solusi_perbaikan): ?>
+                      <div class="mt-2 p-2" style="background: #f8f9fa; border-left: 3px solid #007bff; border-radius: 4px;">
+                        <strong style="font-size: 13px;"><i class="fa fa-tools"></i> Langkah Perbaikan:</strong>
+                        <p class="mb-0 mt-1" style="font-size: 12px; line-height: 1.6;"><?= nl2br($item['rekomendasi']->solusi_perbaikan) ?></p>
                       </div>
+                    <?php endif; ?>
+                    
+                    <!-- Detail CF Calculation -->
+                    <div class="mt-2 pt-2" style="border-top: 1px solid #eee;">
+                      <small class="text-muted" style="font-size: 11px;">
+                        <i class="fa fa-info-circle"></i> 
+                        <strong>Analisis CF:</strong>
+                        CF Gejala: <?= number_format($item['cf_gejala'] * 100, 1) ?>% | 
+                        CF Kerusakan: <?= number_format($item['cf_kerusakan'] * 100, 1) ?>% | 
+                        Match: <?= number_format($item['match_percentage'], 0) ?>%
+                      </small>
                     </div>
                   </div>
-                  
-                  <?php if($item['rekomendasi']->solusi_perbaikan): ?>
-                    <div class="mt-2 p-2" style="background: white; border-radius: 6px;">
-                      <strong style="font-size: 13px;"><i class="fa fa-wrench"></i> Solusi Perbaikan:</strong>
-                      <p class="mb-0 mt-1" style="font-size: 12px;"><?= nl2br($item['rekomendasi']->solusi_perbaikan) ?></p>
-                    </div>
-                  <?php endif; ?>
                 </div>
               </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="alert alert-warning mb-0">
+              <i class="fa fa-exclamation-triangle"></i> Tidak ditemukan rekomendasi yang sesuai dengan gejala dan kerusakan yang dipilih.
+              <br><small>Silakan diagnosis ulang atau pilih opsi lain.</small>
             </div>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <div class="alert alert-warning mb-0">
-            <i class="fa fa-exclamation-triangle"></i> Tidak ada rekomendasi yang sesuai
-          </div>
-        <?php endif; ?>
+          <?php endif; ?>
+        </div>
         
         <div class="text-center mt-3">
           <a href="<?= base_url('home/rekomendasi?reset=1') ?>" class="btn btn-wizard">
