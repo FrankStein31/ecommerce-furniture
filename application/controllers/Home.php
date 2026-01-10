@@ -419,9 +419,425 @@ class Home extends CI_Controller
 
   public function rekomendasi()
   {
-    $data['title'] = "Rekomendasi Perbaikan | " . $this->apl['nama_sistem'];
+    // Load models
+    $this->load->model('Kategori_perbaikan_m');
+    $this->load->model('Jenis_perbaikan_m');
+    $this->load->model('Gejala_kerusakan_m');
+    $this->load->model('Jenis_kerusakan_m');
+    $this->load->model('Rekomendasi_perbaikan_m');
+    
+    // Reset session jika ada parameter reset
+    if ($this->input->get('reset')) {
+      $this->session->unset_userdata('diagnosis_data');
+      redirect('home/rekomendasi?step=1');
+      return;
+    }
+    
+    // Cek step dari session atau default step 1
+    $diagnosis_data = $this->session->userdata('diagnosis_data');
+    $step = $this->input->get('step') ?: 1;
+    
+    // Handle POST dari setiap step
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $new_step = $this->process_step_data($step, $diagnosis_data);
+      // Redirect ke step baru setelah proses data
+      redirect('home/rekomendasi?step=' . $new_step);
+      return;
+    }
+    
+    // Load view berdasarkan step
+    switch ($step) {
+      case 2:
+        // Reload diagnosis_data dari session setelah redirect
+        $diagnosis_data = $this->session->userdata('diagnosis_data');
+        $this->step2_jenis_perbaikan($diagnosis_data);
+        break;
+      case 3:
+        $diagnosis_data = $this->session->userdata('diagnosis_data');
+        $this->step3_gejala($diagnosis_data);
+        break;
+      case 4:
+        $diagnosis_data = $this->session->userdata('diagnosis_data');
+        $this->step4_kerusakan($diagnosis_data);
+        break;
+      case 5:
+        $diagnosis_data = $this->session->userdata('diagnosis_data');
+        $this->step5_hasil($diagnosis_data);
+        break;
+      default:
+        $this->step1_kategori();
+        break;
+    }
+  }
+  
+  private function step1_kategori()
+  {
+    // Search functionality
+    $search = $this->input->get('search_kategori');
+    
+    $this->db->select('id, nama_kategori');
+    $this->db->from('kategori_jenis_perbaikan');
+    $this->db->where('status', '1');
+    
+    if ($search) {
+      $this->db->like('nama_kategori', $search);
+      $this->db->or_like('deskripsi', $search);
+    }
+    
+    $this->db->order_by('urutan', 'ASC');
+    $kategori_query = $this->db->get();
+    
+    $kategori_list = array();
+    foreach ($kategori_query->result() as $row) {
+      $kategori_list[$row->id] = $row->nama_kategori;
+    }
+    
+    $data['title'] = "Diagnosis Kerusakan Furniture | " . $this->apl['nama_sistem'];
+    $data['current_step'] = 1;
+    $data['kategori_list'] = $kategori_list;
+    $data['search_kategori'] = $search;
     $data['content'] = "home/rekomendasi.php";
-    $this->parser->parse('frontend/template_produk', $data);
+    $this->load->view('frontend/template_produk', $data);
+  }
+  
+  private function step2_jenis_perbaikan($diagnosis_data)
+  {
+    $id_kategori = $diagnosis_data['id_kategori'] ?? null;
+    if (!$id_kategori) {
+      redirect('home/rekomendasi?step=1');
+    }
+    
+    // Search functionality
+    $search = $this->input->get('search_jenis');
+    
+    // Pagination
+    $page = $this->input->get('page') ?: 1;
+    $per_page = 6; // 6 items per page (3 rows x 2 columns)
+    $offset = ($page - 1) * $per_page;
+    
+    // Get kategori detail
+    $kategori = $this->db->get_where('kategori_jenis_perbaikan', array('id' => $id_kategori, 'status' => '1'))->row();
+    
+    // Count total
+    $this->db->from('jenis_perbaikan');
+    $this->db->where('id_kategori', $id_kategori);
+    $this->db->where('status', '1');
+    if ($search) {
+      $this->db->group_start();
+      $this->db->like('nama_jenis_perbaikan', $search);
+      $this->db->or_like('deskripsi', $search);
+      $this->db->group_end();
+    }
+    $total_rows = $this->db->count_all_results();
+    $total_pages = ceil($total_rows / $per_page);
+    
+    // Get jenis perbaikan berdasarkan kategori dengan pagination
+    $this->db->select('*');
+    $this->db->from('jenis_perbaikan');
+    $this->db->where('id_kategori', $id_kategori);
+    $this->db->where('status', '1');
+    if ($search) {
+      $this->db->group_start();
+      $this->db->like('nama_jenis_perbaikan', $search);
+      $this->db->or_like('deskripsi', $search);
+      $this->db->group_end();
+    }
+    $this->db->order_by('nama_jenis_perbaikan', 'ASC');
+    $this->db->limit($per_page, $offset);
+    $jenis_perbaikan_list = $this->db->get()->result();
+    
+    $data['title'] = "Pilih Jenis Perbaikan | " . $this->apl['nama_sistem'];
+    $data['current_step'] = 2;
+    $data['kategori_selected'] = $kategori;
+    $data['jenis_perbaikan_list'] = $jenis_perbaikan_list;
+    $data['search_jenis'] = $search;
+    $data['current_page'] = $page;
+    $data['total_pages'] = $total_pages;
+    $data['total_rows'] = $total_rows;
+    $data['content'] = "home/rekomendasi.php";
+    $this->load->view('frontend/template_produk', $data);
+  }  private function step3_gejala($diagnosis_data)
+  {
+    $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? null;
+    if (!$id_jenis_perbaikan) {
+      redirect('home/rekomendasi?step=2');
+    }
+    
+    // Coba kedua nama tabel yang mungkin ada
+    $gejala_list = $this->db->query("
+      SELECT DISTINCT gk.* 
+      FROM gejala_kerusakan gk
+      INNER JOIN gejala_jenis_perbaikan gjp ON gk.id = gjp.id_gejala
+      WHERE gjp.id_jenis_perbaikan = ? AND gk.status = '1'
+      ORDER BY gk.kode_gejala ASC
+    ", array($id_jenis_perbaikan))->result();
+    
+    // Jika kosong, coba tabel relasi
+    if (empty($gejala_list)) {
+      $gejala_list = $this->db->query("
+        SELECT DISTINCT gk.* 
+        FROM gejala_kerusakan gk
+        INNER JOIN relasi_gejala_jenis_perbaikan rgjp ON gk.id = rgjp.id_gejala_kerusakan
+        WHERE rgjp.id_jenis_perbaikan = ? AND gk.status = '1'
+        ORDER BY gk.kode_gejala ASC
+      ", array($id_jenis_perbaikan))->result();
+    }
+    
+    $data['title'] = "Pertanyaan Gejala | " . $this->apl['nama_sistem'];
+    $data['current_step'] = 3;
+    $data['gejala_list'] = $gejala_list;
+    $data['content'] = "home/rekomendasi.php";
+    $this->load->view('frontend/template_produk', $data);
+  }
+  
+  private function step4_kerusakan($diagnosis_data)
+  {
+    $jawaban_gejala = $diagnosis_data['jawaban_gejala'] ?? array();
+    if (empty($jawaban_gejala)) {
+      redirect('home/rekomendasi?step=3');
+    }
+    
+    // Get jenis kerusakan yang relevan
+    $gejala_ya = array();
+    foreach ($jawaban_gejala as $id_gejala => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $gejala_ya[] = $id_gejala;
+      }
+    }
+    
+    $kerusakan_list = array();
+    if (!empty($gejala_ya)) {
+      $gejala_ids = implode(',', $gejala_ya);
+      $kerusakan_list = $this->db->query("
+        SELECT DISTINCT jk.* 
+        FROM jenis_kerusakan jk
+        INNER JOIN relasi_jenis_kerusakan_gejala rjkg ON jk.id = rjkg.id_jenis_kerusakan
+        WHERE rjkg.id_gejala_kerusakan IN ($gejala_ids) AND jk.status = '1'
+        ORDER BY jk.kode_kerusakan ASC
+      ")->result();
+    }
+    
+    $data['title'] = "Pertanyaan Kerusakan | " . $this->apl['nama_sistem'];
+    $data['current_step'] = 4;
+    $data['kerusakan_list'] = $kerusakan_list;
+    $data['content'] = "home/rekomendasi.php";
+    $this->load->view('frontend/template_produk', $data);
+  }
+  
+  private function step5_hasil($diagnosis_data)
+  {
+    $jawaban_kerusakan = $diagnosis_data['jawaban_kerusakan'] ?? array();
+    if (empty($jawaban_kerusakan)) {
+      redirect('home/rekomendasi?step=4');
+    }
+    
+    // Get data lengkap untuk tampilan riwayat
+    $id_kategori = $diagnosis_data['id_kategori'] ?? 0;
+    $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? 0;
+    
+    // Load kategori yang dipilih
+    $kategori = $this->db->get_where('kategori_jenis_perbaikan', array('id' => $id_kategori))->row();
+    
+    // Load jenis perbaikan yang dipilih
+    $jenis_perbaikan = $this->db->get_where('jenis_perbaikan', array('id' => $id_jenis_perbaikan))->row();
+    
+    // Load semua gejala yang dijawab YA
+    $gejala_dipilih = array();
+    foreach ($diagnosis_data['jawaban_gejala'] as $id_gejala => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $gejala_item = $this->db->get_where('gejala_kerusakan', array('id' => $id_gejala))->row();
+        if ($gejala_item) {
+          $gejala_dipilih[] = array(
+            'data' => $gejala_item,
+            'cf_value' => floatval($jawab['cf_value']),
+            'cf_persen' => floatval($jawab['cf_value']) * 100
+          );
+        }
+      }
+    }
+    
+    // Load semua kerusakan yang dijawab YA
+    $kerusakan_dipilih = array();
+    foreach ($diagnosis_data['jawaban_kerusakan'] as $id_kerusakan => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $kerusakan_item = $this->db->get_where('jenis_kerusakan', array('id' => $id_kerusakan))->row();
+        if ($kerusakan_item) {
+          $kerusakan_dipilih[] = array(
+            'data' => $kerusakan_item,
+            'cf_value' => floatval($jawab['cf_value']),
+            'cf_persen' => floatval($jawab['cf_value']) * 100
+          );
+        }
+      }
+    }
+    
+    // Hitung CF untuk rekomendasi
+    $hasil_cf = $this->hitung_certainty_factor($diagnosis_data);
+    
+    $data['title'] = "Hasil Diagnosis | " . $this->apl['nama_sistem'];
+    $data['current_step'] = 5;
+    $data['diagnosis_data'] = $diagnosis_data;
+    $data['kategori'] = $kategori;
+    $data['jenis_perbaikan'] = $jenis_perbaikan;
+    $data['gejala_dipilih'] = $gejala_dipilih;
+    $data['kerusakan_dipilih'] = $kerusakan_dipilih;
+    $data['hasil_cf'] = $hasil_cf;
+    $data['content'] = "home/rekomendasi.php";
+    $this->load->view('frontend/template_produk', $data);
+  }
+  
+  private function process_step_data($step, $diagnosis_data)
+  {
+    if (!is_array($diagnosis_data)) {
+      $diagnosis_data = array();
+    }
+    
+    switch ($step) {
+      case 1:
+        $diagnosis_data['id_kategori'] = $this->input->post('id_kategori');
+        $this->session->set_userdata('diagnosis_data', $diagnosis_data);
+        return 2;
+        
+      case 2:
+        $diagnosis_data['id_jenis_perbaikan'] = $this->input->post('id_jenis_perbaikan');
+        $this->session->set_userdata('diagnosis_data', $diagnosis_data);
+        return 3;
+        
+      case 3:
+        $diagnosis_data['jawaban_gejala'] = $this->input->post('gejala');
+        $this->session->set_userdata('diagnosis_data', $diagnosis_data);
+        return 4;
+        
+      case 4:
+        $diagnosis_data['jawaban_kerusakan'] = $this->input->post('kerusakan');
+        $this->session->set_userdata('diagnosis_data', $diagnosis_data);
+        return 5;
+    }
+    
+    return $step;
+  }
+  
+  private function hitung_certainty_factor($diagnosis_data)
+  {
+    $jawaban_gejala = $diagnosis_data['jawaban_gejala'] ?? array();
+    $jawaban_kerusakan = $diagnosis_data['jawaban_kerusakan'] ?? array();
+    $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? 0;
+    
+    // Get gejala yang dijawab YA
+    $gejala_ya = array();
+    foreach ($jawaban_gejala as $id_gejala => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $gejala_ya[] = $id_gejala;
+      }
+    }
+    
+    // Get kerusakan yang dijawab YA
+    $kerusakan_ya = array();
+    foreach ($jawaban_kerusakan as $id_kerusakan => $jawab) {
+      if ($jawab['jawaban'] == 'ya') {
+        $kerusakan_ya[] = $id_kerusakan;
+      }
+    }
+    
+    if (empty($gejala_ya) || empty($kerusakan_ya)) {
+      return array();
+    }
+    
+    // STEP 1: Cari rekomendasi yang terkait dengan kerusakan yang dipilih
+    $gejala_ids_str = implode(',', $gejala_ya);
+    $kerusakan_ids_str = implode(',', $kerusakan_ya);
+    
+    $rekomendasi_list = $this->db->query("
+      SELECT DISTINCT rp.*, 
+             GROUP_CONCAT(DISTINCT rrjk.id_jenis_kerusakan) as kerusakan_ids,
+             COUNT(DISTINCT rrjk.id_jenis_kerusakan) as jumlah_relasi
+      FROM rekomendasi_perbaikan rp
+      INNER JOIN relasi_rekomendasi_jenis_kerusakan rrjk ON rp.id = rrjk.id_rekomendasi_perbaikan
+      WHERE rp.status = '1' 
+        AND rrjk.id_jenis_kerusakan IN ($kerusakan_ids_str)
+      GROUP BY rp.id
+      ORDER BY jumlah_relasi DESC, rp.cf_value DESC
+    ")->result();
+    
+    $hasil = array();
+    
+    foreach ($rekomendasi_list as $rekomendasi) {
+      // CF dari expert (dari database)
+      $cf_expert = floatval($rekomendasi->cf_value);
+      
+      // STEP 2: Hitung CF gabungan dari gejala yang dijawab YA
+      $cf_gejala = 0;
+      $count_gejala_ya = 0;
+      foreach ($jawaban_gejala as $id_gejala => $jawab) {
+        if ($jawab['jawaban'] == 'ya') {
+          $cf_user = floatval($jawab['cf_value']);
+          if ($count_gejala_ya == 0) {
+            $cf_gejala = $cf_user;
+          } else {
+            // Kombinasi CF: CF(combined) = CF1 + CF2 * (1 - CF1)
+            $cf_gejala = $cf_gejala + ($cf_user * (1 - $cf_gejala));
+          }
+          $count_gejala_ya++;
+        }
+      }
+      
+      // STEP 3: Hitung CF gabungan dari kerusakan yang dijawab YA
+      $cf_kerusakan = 0;
+      $count_kerusakan_ya = 0;
+      $kerusakan_match_count = 0;
+      
+      $kerusakan_ids_array = explode(',', $rekomendasi->kerusakan_ids);
+      
+      foreach ($jawaban_kerusakan as $id_kerusakan => $jawab) {
+        if ($jawab['jawaban'] == 'ya') {
+          $cf_user = floatval($jawab['cf_value']);
+          
+          // Hitung berapa banyak kerusakan yang match
+          if (in_array($id_kerusakan, $kerusakan_ids_array)) {
+            $kerusakan_match_count++;
+          }
+          
+          if ($count_kerusakan_ya == 0) {
+            $cf_kerusakan = $cf_user;
+          } else {
+            $cf_kerusakan = $cf_kerusakan + ($cf_user * (1 - $cf_kerusakan));
+          }
+          $count_kerusakan_ya++;
+        }
+      }
+      
+      // STEP 4: Kombinasi CF Evidence (rata-rata weighted)
+      // Kerusakan lebih penting (70%) daripada gejala (30%)
+      $cf_evidence = ($cf_kerusakan * 0.7) + ($cf_gejala * 0.3);
+      
+      // STEP 5: CF Total = CF Expert × CF Evidence
+      $cf_total = $cf_expert * $cf_evidence;
+      
+      // STEP 6: Bonus untuk match rate
+      $match_percentage = $kerusakan_match_count / max(1, count($kerusakan_ya));
+      $bonus = $match_percentage * 0.15; // Max bonus 15%
+      $cf_total = min(1.0, $cf_total + ($bonus * (1 - $cf_total)));
+      
+      // Hanya tampilkan yang memiliki CF > 0.15 (15%)
+      if ($cf_total > 0.15) {
+        $hasil[] = array(
+          'rekomendasi' => $rekomendasi,
+          'cf_score' => $cf_total,
+          'confidence' => $cf_total * 100,
+          'cf_gejala' => $cf_gejala,
+          'cf_kerusakan' => $cf_kerusakan,
+          'match_count' => $kerusakan_match_count,
+          'match_percentage' => $match_percentage * 100
+        );
+      }
+    }
+    
+    // Sort by CF score descending
+    usort($hasil, function($a, $b) {
+      return $b['cf_score'] <=> $a['cf_score'];
+    });
+    
+    return array_slice($hasil, 0, 5);
   }
 
   public function get_jenis_perbaikan()
