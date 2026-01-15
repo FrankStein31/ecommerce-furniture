@@ -793,6 +793,10 @@ class Home extends CI_Controller
     $jawaban_kerusakan = $diagnosis_data['jawaban_kerusakan'] ?? array();
     $id_jenis_perbaikan = $diagnosis_data['id_jenis_perbaikan'] ?? 0;
     
+    // Initialize reasoning log
+    $reasoning_log = array();
+    $reasoning_log[] = array('step' => 'init', 'message' => 'Memulai proses inferensi Forward Chaining dengan Certainty Factor');
+    
     // Get gejala yang dijawab YA
     $gejala_ya = array();
     foreach ($jawaban_gejala as $id_gejala => $jawab) {
@@ -809,13 +813,29 @@ class Home extends CI_Controller
       }
     }
     
+    $reasoning_log[] = array(
+      'step' => 'evidence', 
+      'message' => 'Mengidentifikasi evidence: ' . count($gejala_ya) . ' gejala dan ' . count($kerusakan_ya) . ' kerusakan terdeteksi',
+      'data' => array('gejala_count' => count($gejala_ya), 'kerusakan_count' => count($kerusakan_ya))
+    );
+    
     if (empty($gejala_ya) || empty($kerusakan_ya)) {
+      $reasoning_log[] = array('step' => 'halt', 'message' => 'Proses dihentikan: Tidak cukup evidence untuk inferensi', 'type' => 'error');
+      $this->session->set_userdata('reasoning_log', $reasoning_log);
       return array();
     }
+    
+    $this->session->set_userdata('reasoning_log', $reasoning_log);
     
     // STEP 1: Cari rekomendasi yang terkait dengan kerusakan yang dipilih
     $gejala_ids_str = implode(',', $gejala_ya);
     $kerusakan_ids_str = implode(',', $kerusakan_ya);
+    
+    $reasoning_log[] = array(
+      'step' => 'rule_matching', 
+      'message' => 'Melakukan rule matching terhadap knowledge base...',
+      'data' => array('gejala_ids' => $gejala_ids_str, 'kerusakan_ids' => $kerusakan_ids_str)
+    );
     
     $rekomendasi_list = $this->db->query("
       SELECT DISTINCT rp.*, 
@@ -829,41 +849,89 @@ class Home extends CI_Controller
       ORDER BY jumlah_relasi DESC, rp.cf_value DESC
     ")->result();
     
-    $hasil = array();
+    $reasoning_log[] = array(
+      'step' => 'rule_found', 
+      'message' => 'Ditemukan ' . count($rekomendasi_list) . ' rule kandidat dari knowledge base',
+      'data' => array('rule_count' => count($rekomendasi_list))
+    );
     
-    foreach ($rekomendasi_list as $rekomendasi) {
+    $hasil = array();
+    $rule_conflicts = array();
+    $redundant_rules = array();
+    
+    foreach ($rekomendasi_list as $idx => $rekomendasi) {
+      $reasoning_log[] = array(
+        'step' => 'rule_eval_start', 
+        'message' => 'Evaluating Rule #' . ($idx + 1) . ': ' . $rekomendasi->nama_rekomendasi,
+        'data' => array('rule_id' => $rekomendasi->id, 'cf_expert' => $rekomendasi->cf_value)
+      );
+      
       // CF dari expert (dari database)
       $cf_expert = floatval($rekomendasi->cf_value);
       
       // STEP 2: Hitung CF gabungan dari gejala yang dijawab YA
       $cf_gejala = 0;
       $count_gejala_ya = 0;
+      $gejala_trace = array();
+      
       foreach ($jawaban_gejala as $id_gejala => $jawab) {
         if ($jawab['jawaban'] == 'ya') {
           $cf_user = floatval($jawab['cf_value']);
+          $cf_before = $cf_gejala;
+          
+          // Get nama gejala
+          $gejala_info = $this->db->get_where('gejala_kerusakan', array('id' => $id_gejala))->row();
+          $nama_gejala = $gejala_info ? $gejala_info->nama_gejala : 'Gejala #' . $id_gejala;
+          $kode_gejala = $gejala_info ? $gejala_info->kode_gejala : 'G' . $id_gejala;
+          
           if ($count_gejala_ya == 0) {
             $cf_gejala = $cf_user;
           } else {
             // Kombinasi CF: CF(combined) = CF1 + CF2 * (1 - CF1)
             $cf_gejala = $cf_gejala + ($cf_user * (1 - $cf_gejala));
           }
+          
+          $gejala_trace[] = array(
+            'id' => $id_gejala,
+            'kode' => $kode_gejala,
+            'nama' => $nama_gejala,
+            'cf_user' => $cf_user,
+            'cf_before' => $cf_before,
+            'cf_after' => $cf_gejala,
+            'formula' => $count_gejala_ya == 0 ? 'CF_init = ' . $cf_user : 'CF_new = ' . number_format($cf_before, 3) . ' + (' . number_format($cf_user, 3) . ' × (1 - ' . number_format($cf_before, 3) . ')) = ' . number_format($cf_gejala, 3)
+          );
+          
           $count_gejala_ya++;
         }
       }
+      
+      $reasoning_log[] = array(
+        'step' => 'cf_gejala', 
+        'message' => 'CF Gejala dihitung dari ' . $count_gejala_ya . ' evidence menggunakan CF Combination: ' . number_format($cf_gejala, 3),
+        'data' => array('trace' => $gejala_trace, 'cf_result' => $cf_gejala)
+      );
       
       // STEP 3: Hitung CF gabungan dari kerusakan yang dijawab YA
       $cf_kerusakan = 0;
       $count_kerusakan_ya = 0;
       $kerusakan_match_count = 0;
+      $kerusakan_trace = array();
       
       $kerusakan_ids_array = explode(',', $rekomendasi->kerusakan_ids);
       
       foreach ($jawaban_kerusakan as $id_kerusakan => $jawab) {
         if ($jawab['jawaban'] == 'ya') {
           $cf_user = floatval($jawab['cf_value']);
+          $cf_before = $cf_kerusakan;
+          
+          // Get nama kerusakan
+          $kerusakan_info = $this->db->get_where('jenis_kerusakan', array('id' => $id_kerusakan))->row();
+          $nama_kerusakan = $kerusakan_info ? $kerusakan_info->nama_jenis_kerusakan : 'Kerusakan #' . $id_kerusakan;
+          $kode_kerusakan = $kerusakan_info ? $kerusakan_info->kode_kerusakan : 'K' . $id_kerusakan;
           
           // Hitung berapa banyak kerusakan yang match
-          if (in_array($id_kerusakan, $kerusakan_ids_array)) {
+          $is_match = in_array($id_kerusakan, $kerusakan_ids_array);
+          if ($is_match) {
             $kerusakan_match_count++;
           }
           
@@ -872,32 +940,125 @@ class Home extends CI_Controller
           } else {
             $cf_kerusakan = $cf_kerusakan + ($cf_user * (1 - $cf_kerusakan));
           }
+          
+          $kerusakan_trace[] = array(
+            'id' => $id_kerusakan,
+            'kode' => $kode_kerusakan,
+            'nama' => $nama_kerusakan,
+            'cf_user' => $cf_user,
+            'cf_before' => $cf_before,
+            'cf_after' => $cf_kerusakan,
+            'is_match' => $is_match,
+            'formula' => $count_kerusakan_ya == 0 ? 'CF_init = ' . $cf_user : 'CF_new = ' . number_format($cf_before, 3) . ' + (' . number_format($cf_user, 3) . ' × (1 - ' . number_format($cf_before, 3) . ')) = ' . number_format($cf_kerusakan, 3)
+          );
+          
           $count_kerusakan_ya++;
         }
       }
+      
+      $reasoning_log[] = array(
+        'step' => 'cf_kerusakan', 
+        'message' => 'CF Kerusakan dihitung dari ' . $count_kerusakan_ya . ' evidence (' . $kerusakan_match_count . ' match dengan rule): ' . number_format($cf_kerusakan, 3),
+        'data' => array('trace' => $kerusakan_trace, 'cf_result' => $cf_kerusakan, 'match_count' => $kerusakan_match_count)
+      );
       
       // STEP 4: Kombinasi CF Evidence (rata-rata weighted)
       // Kerusakan lebih penting (70%) daripada gejala (30%)
       $cf_evidence = ($cf_kerusakan * 0.7) + ($cf_gejala * 0.3);
       
+      $reasoning_log[] = array(
+        'step' => 'cf_evidence', 
+        'message' => 'CF Evidence = (CF_kerusakan × 0.7) + (CF_gejala × 0.3) = (' . number_format($cf_kerusakan, 3) . ' × 0.7) + (' . number_format($cf_gejala, 3) . ' × 0.3) = ' . number_format($cf_evidence, 3),
+        'data' => array('cf_evidence' => $cf_evidence, 'weight_kerusakan' => 0.7, 'weight_gejala' => 0.3)
+      );
+      
       // STEP 5: CF Total = CF Expert × CF Evidence
       $cf_total = $cf_expert * $cf_evidence;
+      
+      $reasoning_log[] = array(
+        'step' => 'cf_hypothesis', 
+        'message' => 'CF Hypothesis = CF_expert × CF_evidence = ' . number_format($cf_expert, 3) . ' × ' . number_format($cf_evidence, 3) . ' = ' . number_format($cf_total, 3),
+        'data' => array('cf_total_before_bonus' => $cf_total)
+      );
       
       // STEP 6: Bonus untuk match rate
       $match_percentage = $kerusakan_match_count / max(1, count($kerusakan_ya));
       $bonus = $match_percentage * 0.15; // Max bonus 15%
+      $cf_before_bonus = $cf_total;
       $cf_total = min(1.0, $cf_total + ($bonus * (1 - $cf_total)));
+      
+      $reasoning_log[] = array(
+        'step' => 'cf_bonus', 
+        'message' => 'Bonus Match Rate: ' . number_format($match_percentage * 100, 1) . '% → Bonus +' . number_format($bonus * 100, 1) . '% → CF Final = ' . number_format($cf_total, 3),
+        'data' => array('match_rate' => $match_percentage, 'bonus' => $bonus, 'cf_final' => $cf_total)
+      );
+      
+      // Deteksi konflik rule (CF rendah meskipun match tinggi)
+      if ($match_percentage > 0.7 && $cf_total < 0.3) {
+        $rule_conflicts[] = array(
+          'rule' => $rekomendasi->nama_rekomendasi,
+          'reason' => 'Match rate tinggi (' . number_format($match_percentage * 100, 0) . '%) namun CF rendah (' . number_format($cf_total * 100, 0) . '%)',
+          'cf_expert' => $cf_expert,
+          'cf_evidence' => $cf_evidence
+        );
+        
+        $reasoning_log[] = array(
+          'step' => 'conflict_detected', 
+          'message' => '⚠️ KONFLIK TERDETEKSI: Match rate tinggi tapi CF rendah - kemungkinan CF_expert terlalu konservatif',
+          'type' => 'warning',
+          'data' => array('match_rate' => $match_percentage, 'cf_total' => $cf_total)
+        );
+      }
+      
+      // Deteksi redundansi (rule sangat mirip dengan yang sudah ada)
+      foreach ($hasil as $existing) {
+        $cf_diff = abs($existing['cf_score'] - $cf_total);
+        $match_diff = abs($existing['match_percentage'] - ($match_percentage * 100));
+        
+        if ($cf_diff < 0.05 && $match_diff < 5) {
+          $redundant_rules[] = array(
+            'rule1' => $existing['rekomendasi']->nama_rekomendasi,
+            'rule2' => $rekomendasi->nama_rekomendasi,
+            'reason' => 'CF difference: ' . number_format($cf_diff * 100, 1) . '%, Match difference: ' . number_format($match_diff, 1) . '%'
+          );
+          
+          $reasoning_log[] = array(
+            'step' => 'redundancy_detected', 
+            'message' => '⚠️ REDUNDANSI: Rule ini sangat mirip dengan "' . $existing['rekomendasi']->nama_rekomendasi . '"',
+            'type' => 'warning',
+            'data' => array('cf_diff' => $cf_diff, 'match_diff' => $match_diff)
+          );
+        }
+      }
       
       // Hanya tampilkan yang memiliki CF > 0.15 (15%)
       if ($cf_total > 0.15) {
+        $reasoning_log[] = array(
+          'step' => 'rule_accepted', 
+          'message' => '✓ Rule diterima dengan CF = ' . number_format($cf_total * 100, 1) . '% (threshold: 15%)',
+          'type' => 'success',
+          'data' => array('cf_total' => $cf_total)
+        );
+        
         $hasil[] = array(
           'rekomendasi' => $rekomendasi,
           'cf_score' => $cf_total,
           'confidence' => $cf_total * 100,
           'cf_gejala' => $cf_gejala,
           'cf_kerusakan' => $cf_kerusakan,
+          'cf_evidence' => $cf_evidence,
+          'cf_expert' => $cf_expert,
           'match_count' => $kerusakan_match_count,
-          'match_percentage' => $match_percentage * 100
+          'match_percentage' => $match_percentage * 100,
+          'gejala_trace' => $gejala_trace,
+          'kerusakan_trace' => $kerusakan_trace
+        );
+      } else {
+        $reasoning_log[] = array(
+          'step' => 'rule_rejected', 
+          'message' => '✗ Rule ditolak: CF = ' . number_format($cf_total * 100, 1) . '% < 15% (threshold)',
+          'type' => 'error',
+          'data' => array('cf_total' => $cf_total)
         );
       }
     }
@@ -906,6 +1067,49 @@ class Home extends CI_Controller
     usort($hasil, function($a, $b) {
       return $b['cf_score'] <=> $a['cf_score'];
     });
+    
+    $reasoning_log[] = array(
+      'step' => 'ranking', 
+      'message' => 'Hasil diurutkan berdasarkan CF score tertinggi',
+      'data' => array('total_accepted' => count($hasil))
+    );
+    
+    // Summary konflik dan redundansi
+    if (!empty($rule_conflicts)) {
+      $reasoning_log[] = array(
+        'step' => 'conflicts_summary', 
+        'message' => 'Ditemukan ' . count($rule_conflicts) . ' konflik rule dalam knowledge base',
+        'type' => 'warning',
+        'data' => $rule_conflicts
+      );
+    }
+    
+    if (!empty($redundant_rules)) {
+      $reasoning_log[] = array(
+        'step' => 'redundancy_summary', 
+        'message' => 'Ditemukan ' . count($redundant_rules) . ' redundansi rule dalam knowledge base',
+        'type' => 'warning',
+        'data' => $redundant_rules
+      );
+    }
+    
+    $reasoning_log[] = array(
+      'step' => 'complete', 
+      'message' => 'Inferensi selesai: ' . count($hasil) . ' rekomendasi diterima dari ' . count($rekomendasi_list) . ' rule kandidat',
+      'type' => 'success',
+      'data' => array(
+        'total_rules_evaluated' => count($rekomendasi_list),
+        'total_accepted' => count($hasil),
+        'total_rejected' => count($rekomendasi_list) - count($hasil),
+        'conflicts_found' => count($rule_conflicts),
+        'redundancies_found' => count($redundant_rules)
+      )
+    );
+    
+    // Store reasoning log and metadata
+    $this->session->set_userdata('reasoning_log', $reasoning_log);
+    $this->session->set_userdata('rule_conflicts', $rule_conflicts);
+    $this->session->set_userdata('redundant_rules', $redundant_rules);
     
     return array_slice($hasil, 0, 5);
   }
