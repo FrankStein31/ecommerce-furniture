@@ -563,29 +563,45 @@ class Home extends CI_Controller
       redirect('home/rekomendasi?step=2');
     }
     
-    // Coba kedua nama tabel yang mungkin ada
-    $gejala_list = $this->db->query("
+    // Get all gejala untuk jenis perbaikan ini
+    $all_gejala = $this->db->query("
       SELECT DISTINCT gk.* 
       FROM gejala_kerusakan gk
       INNER JOIN gejala_jenis_perbaikan gjp ON gk.id = gjp.id_gejala
       WHERE gjp.id_jenis_perbaikan = ? AND gk.status = '1'
-      ORDER BY gk.kode_gejala ASC
+      ORDER BY gk.urutan ASC, gk.kode_gejala ASC
     ", array($id_jenis_perbaikan))->result();
     
     // Jika kosong, coba tabel relasi
-    if (empty($gejala_list)) {
-      $gejala_list = $this->db->query("
+    if (empty($all_gejala)) {
+      $all_gejala = $this->db->query("
         SELECT DISTINCT gk.* 
         FROM gejala_kerusakan gk
         INNER JOIN relasi_gejala_jenis_perbaikan rgjp ON gk.id = rgjp.id_gejala_kerusakan
         WHERE rgjp.id_jenis_perbaikan = ? AND gk.status = '1'
-        ORDER BY gk.kode_gejala ASC
+        ORDER BY gk.urutan ASC, gk.kode_gejala ASC
       ", array($id_jenis_perbaikan))->result();
+    }
+    
+    // Hitung sudah berapa pertanyaan yang dijawab
+    $jawaban_gejala = $diagnosis_data['jawaban_gejala'] ?? array();
+    $total_gejala = count($all_gejala);
+    $total_dijawab = count($jawaban_gejala);
+    
+    // Ambil gejala saat ini (yang belum dijawab)
+    $current_gejala = null;
+    $current_index = $total_dijawab;
+    
+    if ($current_index < $total_gejala) {
+      $current_gejala = $all_gejala[$current_index];
     }
     
     $data['title'] = "Pertanyaan Gejala | " . $this->apl['nama_sistem'];
     $data['current_step'] = 3;
-    $data['gejala_list'] = $gejala_list;
+    $data['current_gejala'] = $current_gejala;
+    $data['current_index'] = $current_index + 1;
+    $data['total_gejala'] = $total_gejala;
+    $data['jawaban_gejala'] = $jawaban_gejala;
     $data['content'] = "home/rekomendasi.php";
     $this->load->view('frontend/template_produk', $data);
   }
@@ -597,7 +613,7 @@ class Home extends CI_Controller
       redirect('home/rekomendasi?step=3');
     }
     
-    // Get jenis kerusakan yang relevan
+    // Get jenis kerusakan yang relevan berdasarkan gejala YA
     $gejala_ya = array();
     foreach ($jawaban_gejala as $id_gejala => $jawab) {
       if ($jawab['jawaban'] == 'ya') {
@@ -605,21 +621,37 @@ class Home extends CI_Controller
       }
     }
     
-    $kerusakan_list = array();
+    $all_kerusakan = array();
     if (!empty($gejala_ya)) {
       $gejala_ids = implode(',', $gejala_ya);
-      $kerusakan_list = $this->db->query("
+      $all_kerusakan = $this->db->query("
         SELECT DISTINCT jk.* 
         FROM jenis_kerusakan jk
         INNER JOIN relasi_jenis_kerusakan_gejala rjkg ON jk.id = rjkg.id_jenis_kerusakan
         WHERE rjkg.id_gejala_kerusakan IN ($gejala_ids) AND jk.status = '1'
-        ORDER BY jk.kode_kerusakan ASC
+        ORDER BY jk.urutan ASC, jk.kode_kerusakan ASC
       ")->result();
+    }
+    
+    // Hitung sudah berapa pertanyaan yang dijawab
+    $jawaban_kerusakan = $diagnosis_data['jawaban_kerusakan'] ?? array();
+    $total_kerusakan = count($all_kerusakan);
+    $total_dijawab = count($jawaban_kerusakan);
+    
+    // Ambil kerusakan saat ini (yang belum dijawab)
+    $current_kerusakan = null;
+    $current_index = $total_dijawab;
+    
+    if ($current_index < $total_kerusakan) {
+      $current_kerusakan = $all_kerusakan[$current_index];
     }
     
     $data['title'] = "Pertanyaan Kerusakan | " . $this->apl['nama_sistem'];
     $data['current_step'] = 4;
-    $data['kerusakan_list'] = $kerusakan_list;
+    $data['current_kerusakan'] = $current_kerusakan;
+    $data['current_index'] = $current_index + 1;
+    $data['total_kerusakan'] = $total_kerusakan;
+    $data['jawaban_kerusakan'] = $jawaban_kerusakan;
     $data['content'] = "home/rekomendasi.php";
     $this->load->view('frontend/template_produk', $data);
   }
@@ -704,14 +736,52 @@ class Home extends CI_Controller
         return 3;
         
       case 3:
-        $diagnosis_data['jawaban_gejala'] = $this->input->post('gejala');
+        // Simpan jawaban gejala satu per satu
+        $id_gejala = $this->input->post('id_gejala');
+        $jawaban = $this->input->post('jawaban');
+        $cf_value = $this->input->post('cf_value');
+        
+        if (!isset($diagnosis_data['jawaban_gejala'])) {
+          $diagnosis_data['jawaban_gejala'] = array();
+        }
+        
+        $diagnosis_data['jawaban_gejala'][$id_gejala] = array(
+          'jawaban' => $jawaban,
+          'cf_value' => $cf_value ?: 0.6
+        );
+        
         $this->session->set_userdata('diagnosis_data', $diagnosis_data);
-        return 4;
+        
+        // Cek apakah masih ada gejala yang belum dijawab
+        $selesai = $this->input->post('selesai');
+        if ($selesai == '1') {
+          return 4; // Lanjut ke step kerusakan
+        }
+        return 3; // Masih di step gejala
         
       case 4:
-        $diagnosis_data['jawaban_kerusakan'] = $this->input->post('kerusakan');
+        // Simpan jawaban kerusakan satu per satu
+        $id_kerusakan = $this->input->post('id_kerusakan');
+        $jawaban = $this->input->post('jawaban');
+        $cf_value = $this->input->post('cf_value');
+        
+        if (!isset($diagnosis_data['jawaban_kerusakan'])) {
+          $diagnosis_data['jawaban_kerusakan'] = array();
+        }
+        
+        $diagnosis_data['jawaban_kerusakan'][$id_kerusakan] = array(
+          'jawaban' => $jawaban,
+          'cf_value' => $cf_value ?: 0.6
+        );
+        
         $this->session->set_userdata('diagnosis_data', $diagnosis_data);
-        return 5;
+        
+        // Cek apakah masih ada kerusakan yang belum dijawab
+        $selesai = $this->input->post('selesai');
+        if ($selesai == '1') {
+          return 5; // Lanjut ke hasil
+        }
+        return 4; // Masih di step kerusakan
     }
     
     return $step;

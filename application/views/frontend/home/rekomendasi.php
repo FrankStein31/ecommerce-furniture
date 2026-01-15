@@ -370,190 +370,214 @@ $diagnosis_data = $this->session->userdata('diagnosis_data') ?? array();
         </form>
 
       <?php elseif ($current_step == 3): ?>
-        <!-- STEP 3: PERTANYAAN GEJALA -->
-        <div class="text-center mb-3">
+        <!-- STEP 3: PERTANYAAN GEJALA (SATU PER SATU) -->
+        <div class="text-center mb-4">
           <h4><i class="fa fa-question-circle"></i> Pertanyaan Gejala Kerusakan</h4>
-          <p class="text-muted mb-3" style="font-size: 13px;">Jawab pertanyaan berikut sesuai kondisi furniture Anda</p>
+          <p class="text-muted mb-2" style="font-size: 13px;">Jawab pertanyaan berikut sesuai kondisi furniture Anda</p>
         </div>
 
-        <form method="post" action="<?= base_url('home/rekomendasi?step=3') ?>" id="form-gejala">
-          <?php if(!empty($gejala_list)): ?>
-            <?php foreach($gejala_list as $index => $gejala): ?>
-              <div class="question-card">
-                <div class="d-flex align-items-start">
-                  <div class="mr-2">
-                    <span class="badge badge-primary" style="font-size: 11px; padding: 5px 8px;">
-                      <?= $gejala->kode_gejala ?>
-                    </span>
-                  </div>
-                  <div class="flex-grow-1">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;"><?= $gejala->pertanyaan ?: $gejala->nama_gejala ?></div>
-                    <?php if ($gejala->deskripsi_gejala): ?>
-                      <small class="text-muted" style="font-size: 12px;"><?= $gejala->deskripsi_gejala ?></small>
-                    <?php endif; ?>
-                    
-                    <div class="mt-2">
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input jawaban-gejala" type="radio" 
-                               name="gejala[<?= $gejala->id ?>][jawaban]" 
-                               id="gejala_<?= $gejala->id ?>_ya"
-                               value="ya" required>
-                        <label class="form-check-label" for="gejala_<?= $gejala->id ?>_ya">Ya</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input jawaban-gejala" type="radio" 
-                               name="gejala[<?= $gejala->id ?>][jawaban]" 
-                               id="gejala_<?= $gejala->id ?>_tidak"
-                               value="tidak" required>
-                        <label class="form-check-label" for="gejala_<?= $gejala->id ?>_tidak">Tidak</label>
-                      </div>
-                    </div>
-                    
-                    <div class="cf-section-<?= $gejala->id ?>" style="display: none; margin-top: 10px;">
-                      <small class="text-muted d-block mb-1" style="font-size: 11px;">Tingkat Keyakinan:</small>
-                      <div class="cf-options">
-                        <label class="cf-option">
-                          <input type="radio" name="gejala[<?= $gejala->id ?>][cf_value]" value="0.2" style="display: none;">
-                          <div style="font-weight: 600;">Sangat Ragu</div>
-                          <small class="text-muted">20%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="gejala[<?= $gejala->id ?>][cf_value]" value="0.4" style="display: none;">
-                          <div style="font-weight: 600;">Tidak Yakin</div>
-                          <small class="text-muted">40%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="gejala[<?= $gejala->id ?>][cf_value]" value="0.6" style="display: none;">
-                          <div style="font-weight: 600;">Cukup Yakin</div>
-                          <small class="text-muted">60%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="gejala[<?= $gejala->id ?>][cf_value]" value="0.8" style="display: none;">
-                          <div style="font-weight: 600;">Yakin</div>
-                          <small class="text-muted">80%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="gejala[<?= $gejala->id ?>][cf_value]" value="1.0" style="display: none;">
-                          <div style="font-weight: 600;">Sangat Yakin</div>
-                          <small class="text-muted">100%</small>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+        <?php if ($current_gejala): ?>
+          <form method="post" action="<?= base_url('home/rekomendasi?step=3') ?>" id="form-gejala-single">
+            <input type="hidden" name="id_gejala" value="<?= $current_gejala->id ?>">
+            <input type="hidden" name="selesai" id="selesai_gejala" value="0">
+            
+            <div class="question-card" style="padding: 20px;">
+              <div class="text-center mb-3">
+                <span class="badge badge-primary" style="font-size: 12px; padding: 8px 12px;">
+                  <?= $current_gejala->kode_gejala ?>
+                </span>
+              </div>
+              
+              <h5 class="text-center mb-3" style="font-size: 16px; font-weight: 600;">
+                <?= $current_gejala->pertanyaan ?: $current_gejala->nama_gejala ?>
+              </h5>
+              
+              <?php if ($current_gejala->deskripsi_gejala): ?>
+                <p class="text-muted text-center mb-4" style="font-size: 13px;">
+                  <i class="fa fa-info-circle"></i> <?= $current_gejala->deskripsi_gejala ?>
+                </p>
+              <?php endif; ?>
+              
+              <div class="text-center mb-3">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-success btn-jawab" data-jawaban="ya" style="min-width: 80px; padding: 8px 20px; border-radius: 20px 0 0 20px;">
+                    <i class="fa fa-check"></i> Ya
+                  </button>
+                  <button type="button" class="btn btn-outline-danger btn-jawab" data-jawaban="tidak" style="min-width: 80px; padding: 8px 20px; border-radius: 0 20px 20px 0;">
+                    <i class="fa fa-times"></i> Tidak
+                  </button>
+                </div>
+                <input type="hidden" name="jawaban" id="jawaban_value" required>
+              </div>
+              
+              <div id="cf-section" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
+                <label class="d-block text-center mb-3" style="font-size: 14px; font-weight: 600;">
+                  <i class="fa fa-sliders-h"></i> Tingkat Keyakinan Anda:
+                </label>
+                <div class="cf-options">
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.2" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Sangat Ragu</div>
+                    <small class="text-muted" style="font-size: 10px;">20%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.4" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Tidak Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">40%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.6" style="display: none;" checked>
+                    <div style="font-weight: 600; font-size: 11px;">Cukup Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">60%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.8" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">80%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="1.0" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Sangat Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">100%</small>
+                  </label>
                 </div>
               </div>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <div class="alert alert-warning mb-0">
-              <i class="fa fa-exclamation-triangle"></i> Belum ada gejala untuk jenis perbaikan ini
             </div>
-          <?php endif; ?>
-          
-          <div class="text-center mt-3">
-            <a href="<?= base_url('home/rekomendasi?step=2') ?>" class="btn btn-secondary btn-sm mr-2">
-              <i class="fa fa-arrow-left"></i> Kembali
+            
+            <div class="text-center mt-4">
+              <a href="<?= base_url('home/rekomendasi?step=2') ?>" class="btn btn-secondary btn-sm mr-2">
+                <i class="fa fa-arrow-left"></i> Kembali
+              </a>
+              <button type="submit" class="btn btn-wizard" id="btn-next-gejala" disabled>
+                <?= $current_index < $total_gejala ? 'Lanjut' : 'Selesai' ?> <i class="fa fa-arrow-right ml-1"></i>
+              </button>
+            </div>
+          </form>
+        <?php else: ?>
+          <!-- Semua gejala sudah dijawab -->
+          <div class="alert alert-success text-center">
+            <i class="fa fa-check-circle fa-3x mb-3"></i>
+            <h5>Pertanyaan Gejala Selesai!</h5>
+            <p class="mb-3">Anda telah menjawab <?= count($jawaban_gejala) ?> pertanyaan gejala.</p>
+            <a href="<?= base_url('home/rekomendasi?step=4') ?>" class="btn btn-wizard">
+              Lanjut ke Pertanyaan Kerusakan <i class="fa fa-arrow-right ml-1"></i>
             </a>
-            <button type="submit" class="btn btn-wizard">
-              Lanjut <i class="fa fa-arrow-right ml-1"></i>
-            </button>
           </div>
-        </form>
+        <?php endif; ?>
 
       <?php elseif ($current_step == 4): ?>
-        <!-- STEP 4: PERTANYAAN KERUSAKAN -->
-        <div class="text-center mb-3">
+        <!-- STEP 4: PERTANYAAN KERUSAKAN (SATU PER SATU) -->
+        <div class="text-center mb-4">
           <h4><i class="fa fa-exclamation-triangle"></i> Pertanyaan Jenis Kerusakan</h4>
-          <p class="text-muted mb-3" style="font-size: 13px;">Identifikasi jenis kerusakan yang dialami</p>
+          <p class="text-muted mb-2" style="font-size: 13px;">Identifikasi jenis kerusakan yang dialami</p>
         </div>
 
-        <form method="post" action="<?= base_url('home/rekomendasi?step=4') ?>" id="form-kerusakan">
-          <?php if(!empty($kerusakan_list)): ?>
-            <?php foreach($kerusakan_list as $kerusakan): ?>
-              <div class="question-card">
-                <div class="d-flex align-items-start">
-                  <div class="mr-2">
-                    <?php if($kerusakan->ilustrasi_gambar): ?>
-                      <img src="<?= base_url($kerusakan->ilustrasi_gambar) ?>" 
-                           alt="<?= $kerusakan->nama_jenis_kerusakan ?>" 
-                           style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
-                    <?php else: ?>
-                      <span class="badge badge-danger" style="font-size: 11px; padding: 5px 8px;">
-                        <?= $kerusakan->kode_kerusakan ?>
-                      </span>
-                    <?php endif; ?>
-                  </div>
-                  <div class="flex-grow-1">
-                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;"><?= $kerusakan->pertanyaan ?: 'Apakah furniture mengalami: '.$kerusakan->nama_jenis_kerusakan.'?' ?></div>
-                    <?php if ($kerusakan->detail_kerusakan): ?>
-                      <small class="text-muted" style="font-size: 12px;"><?= $kerusakan->detail_kerusakan ?></small>
-                    <?php endif; ?>
-                    
-                    <div class="mt-2">
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input jawaban-kerusakan" type="radio" 
-                               name="kerusakan[<?= $kerusakan->id ?>][jawaban]" 
-                               id="kerusakan_<?= $kerusakan->id ?>_ya"
-                               value="ya" required>
-                        <label class="form-check-label" for="kerusakan_<?= $kerusakan->id ?>_ya">Ya</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input jawaban-kerusakan" type="radio" 
-                               name="kerusakan[<?= $kerusakan->id ?>][jawaban]" 
-                               id="kerusakan_<?= $kerusakan->id ?>_tidak"
-                               value="tidak" required>
-                        <label class="form-check-label" for="kerusakan_<?= $kerusakan->id ?>_tidak">Tidak</label>
-                      </div>
-                    </div>
-                    
-                    <div class="cf-section-k<?= $kerusakan->id ?>" style="display: none; margin-top: 10px;">
-                      <small class="text-muted d-block mb-1" style="font-size: 11px;">Tingkat Keyakinan:</small>
-                      <div class="cf-options">
-                        <label class="cf-option">
-                          <input type="radio" name="kerusakan[<?= $kerusakan->id ?>][cf_value]" value="0.2" style="display: none;">
-                          <div style="font-weight: 600;">Sangat Ragu</div>
-                          <small class="text-muted">20%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="kerusakan[<?= $kerusakan->id ?>][cf_value]" value="0.4" style="display: none;">
-                          <div style="font-weight: 600;">Tidak Yakin</div>
-                          <small class="text-muted">40%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="kerusakan[<?= $kerusakan->id ?>][cf_value]" value="0.6" style="display: none;">
-                          <div style="font-weight: 600;">Cukup Yakin</div>
-                          <small class="text-muted">60%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="kerusakan[<?= $kerusakan->id ?>][cf_value]" value="0.8" style="display: none;">
-                          <div style="font-weight: 600;">Yakin</div>
-                          <small class="text-muted">80%</small>
-                        </label>
-                        <label class="cf-option">
-                          <input type="radio" name="kerusakan[<?= $kerusakan->id ?>][cf_value]" value="1.0" style="display: none;">
-                          <div style="font-weight: 600;">Sangat Yakin</div>
-                          <small class="text-muted">100%</small>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+        <?php if ($current_kerusakan): ?>
+          <form method="post" action="<?= base_url('home/rekomendasi?step=4') ?>" id="form-kerusakan-single">
+            <input type="hidden" name="id_kerusakan" value="<?= $current_kerusakan->id ?>">
+            <input type="hidden" name="selesai" id="selesai_kerusakan" value="0">
+            
+            <div class="question-card" style="padding: 20px;">
+              <div class="text-center mb-3">
+                <?php if($current_kerusakan->ilustrasi_gambar): ?>
+                  <img src="<?= base_url($current_kerusakan->ilustrasi_gambar) ?>" 
+                       alt="<?= $current_kerusakan->nama_jenis_kerusakan ?>" 
+                       style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
+                <?php endif; ?>
+                <div>
+                  <span class="badge badge-danger" style="font-size: 12px; padding: 8px 12px;">
+                    <?= $current_kerusakan->kode_kerusakan ?>
+                  </span>
+                  <span class="badge badge-<?= $current_kerusakan->tingkat_kerusakan == 'berat' ? 'danger' : ($current_kerusakan->tingkat_kerusakan == 'sedang' ? 'warning' : 'info') ?> ml-1" style="font-size: 12px; padding: 8px 12px;">
+                    <?= ucfirst($current_kerusakan->tingkat_kerusakan) ?>
+                  </span>
                 </div>
               </div>
-            <?php endforeach; ?>
-          <?php else: ?>
-            <div class="alert alert-info mb-0">
-              <i class="fa fa-info-circle"></i> Tidak ada kerusakan yang cocok dengan gejala yang Anda pilih
+              
+              <h5 class="text-center mb-3" style="font-size: 16px; font-weight: 600;">
+                <?= $current_kerusakan->pertanyaan ?: 'Apakah furniture mengalami: '.$current_kerusakan->nama_jenis_kerusakan.'?' ?>
+              </h5>
+              
+              <?php if ($current_kerusakan->detail_kerusakan): ?>
+                <p class="text-muted text-center mb-4" style="font-size: 13px;">
+                  <i class="fa fa-info-circle"></i> <?= $current_kerusakan->detail_kerusakan ?>
+                </p>
+              <?php endif; ?>
+              
+              <div class="text-center mb-3">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-success btn-jawab-kerusakan" data-jawaban="ya" style="min-width: 80px; padding: 8px 20px; border-radius: 20px 0 0 20px;">
+                    <i class="fa fa-check"></i> Ya
+                  </button>
+                  <button type="button" class="btn btn-outline-danger btn-jawab-kerusakan" data-jawaban="tidak" style="min-width: 80px; padding: 8px 20px; border-radius: 0 20px 20px 0;">
+                    <i class="fa fa-times"></i> Tidak
+                  </button>
+                </div>
+                <input type="hidden" name="jawaban" id="jawaban_kerusakan_value" required>
+              </div>
+              
+              <div id="cf-section-kerusakan" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
+                <label class="d-block text-center mb-3" style="font-size: 14px; font-weight: 600;">
+                  <i class="fa fa-sliders-h"></i> Tingkat Keyakinan Anda:
+                </label>
+                <div class="cf-options">
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.2" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Sangat Ragu</div>
+                    <small class="text-muted" style="font-size: 10px;">20%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.4" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Tidak Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">40%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.6" style="display: none;" checked>
+                    <div style="font-weight: 600; font-size: 11px;">Cukup Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">60%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="0.8" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">80%</small>
+                  </label>
+                  <label class="cf-option">
+                    <input type="radio" name="cf_value" value="1.0" style="display: none;">
+                    <div style="font-weight: 600; font-size: 11px;">Sangat Yakin</div>
+                    <small class="text-muted" style="font-size: 10px;">100%</small>
+                  </label>
+                </div>
+              </div>
             </div>
-          <?php endif; ?>
-          
-          <div class="text-center mt-3">
-            <a href="<?= base_url('home/rekomendasi?step=3') ?>" class="btn btn-secondary btn-sm mr-2">
-              <i class="fa fa-arrow-left"></i> Kembali
-            </a>
-            <button type="submit" class="btn btn-wizard">
-              Lihat Hasil <i class="fa fa-check ml-1"></i>
-            </button>
+            
+            <div class="text-center mt-4">
+              <a href="<?= base_url('home/rekomendasi?step=3') ?>" class="btn btn-secondary btn-sm mr-2">
+                <i class="fa fa-arrow-left"></i> Kembali
+              </a>
+              <button type="submit" class="btn btn-wizard" id="btn-next-kerusakan" disabled>
+                <?= $current_index < $total_kerusakan ? 'Lanjut' : 'Lihat Hasil' ?> <i class="fa fa-<?= $current_index < $total_kerusakan ? 'arrow-right' : 'check' ?> ml-1"></i>
+              </button>
+            </div>
+          </form>
+        <?php else: ?>
+          <!-- Tidak ada kerusakan atau semua sudah dijawab -->
+          <div class="alert alert-<?= empty($jawaban_kerusakan) ? 'info' : 'success' ?> text-center">
+            <i class="fa fa-<?= empty($jawaban_kerusakan) ? 'info-circle' : 'check-circle' ?> fa-3x mb-3"></i>
+            <?php if (empty($jawaban_kerusakan)): ?>
+              <h5>Tidak Ada Kerusakan Terdeteksi</h5>
+              <p class="mb-3">Berdasarkan gejala yang Anda pilih, tidak ditemukan kerusakan yang relevan.</p>
+              <a href="<?= base_url('home/rekomendasi?step=3') ?>" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Kembali ke Gejala
+              </a>
+            <?php else: ?>
+              <h5>Pertanyaan Kerusakan Selesai!</h5>
+              <p class="mb-3">Anda telah menjawab <?= count($jawaban_kerusakan) ?> pertanyaan kerusakan.</p>
+              <a href="<?= base_url('home/rekomendasi?step=5') ?>" class="btn btn-wizard">
+                Lihat Hasil Diagnosis <i class="fa fa-check ml-1"></i>
+              </a>
+            <?php endif; ?>
           </div>
-        </form>
+        <?php endif; ?>
 
       <?php elseif ($current_step == 5): ?>
         <!-- STEP 5: HASIL DIAGNOSIS -->
@@ -647,6 +671,29 @@ $diagnosis_data = $this->session->userdata('diagnosis_data') ?? array();
           </h5>
           
           <?php if(!empty($hasil_cf)): ?>
+            <!-- TOTAL BIAYA ESTIMASI -->
+            <?php 
+              $total_biaya = 0;
+              foreach($hasil_cf as $item) {
+                $total_biaya += $item['rekomendasi']->biaya_estimasi;
+              }
+            ?>
+            <div class="alert alert-info mb-3" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: none;">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <strong style="font-size: 14px;"><i class="fa fa-calculator"></i> Total Estimasi Biaya:</strong>
+                  <p class="mb-0 mt-1" style="font-size: 12px; color: #555;">
+                    Dari <?= count($hasil_cf) ?> rekomendasi perbaikan yang sesuai
+                  </p>
+                </div>
+                <div>
+                  <h4 class="mb-0" style="color: #1976d2; font-weight: 700;">
+                    Rp <?= number_format($total_biaya, 0, ',', '.') ?>
+                  </h4>
+                </div>
+              </div>
+            </div>
+            
             <?php foreach($hasil_cf as $index => $item): ?>
               <div class="result-card">
                 <div class="d-flex align-items-start">
@@ -744,7 +791,6 @@ $(document).ready(function() {
     $(this).addClass('selected');
     $(this).find('input[type="radio"]').prop('checked', true);
     
-    // Auto submit dengan delay kecil untuk animasi
     setTimeout(function() {
       $form.submit();
     }, 300);
@@ -756,10 +802,47 @@ $(document).ready(function() {
     $(this).addClass('selected');
     $(this).find('input[type="radio"]').prop('checked', true);
     
-    // Auto submit dengan delay kecil untuk animasi
     setTimeout(function() {
       $form.submit();
     }, 300);
+  });
+  
+  // === STEP 3: PERTANYAAN GEJALA SATU PER SATU ===
+  $('.btn-jawab').click(function() {
+    var jawaban = $(this).data('jawaban');
+    $('#jawaban_value').val(jawaban);
+    
+    $('.btn-jawab').removeClass('btn-success btn-danger').addClass('btn-outline-success btn-outline-danger');
+    
+    if (jawaban == 'ya') {
+      $(this).removeClass('btn-outline-success').addClass('btn-success');
+      $('#cf-section').slideDown(300);
+      $('.cf-option:eq(2)').click(); // Default cukup yakin (60%)
+      $('#btn-next-gejala').prop('disabled', false);
+    } else {
+      $(this).removeClass('btn-outline-danger').addClass('btn-danger');
+      $('#cf-section').slideUp(300);
+      $('#btn-next-gejala').prop('disabled', false);
+    }
+  });
+  
+  // === STEP 4: PERTANYAAN KERUSAKAN SATU PER SATU ===
+  $('.btn-jawab-kerusakan').click(function() {
+    var jawaban = $(this).data('jawaban');
+    $('#jawaban_kerusakan_value').val(jawaban);
+    
+    $('.btn-jawab-kerusakan').removeClass('btn-success btn-danger').addClass('btn-outline-success btn-outline-danger');
+    
+    if (jawaban == 'ya') {
+      $(this).removeClass('btn-outline-success').addClass('btn-success');
+      $('#cf-section-kerusakan').slideDown(300);
+      $('.cf-option:eq(2)').click(); // Default cukup yakin (60%)
+      $('#btn-next-kerusakan').prop('disabled', false);
+    } else {
+      $(this).removeClass('btn-outline-danger').addClass('btn-danger');
+      $('#cf-section-kerusakan').slideUp(300);
+      $('#btn-next-kerusakan').prop('disabled', false);
+    }
   });
   
   // CF option selection
@@ -769,34 +852,23 @@ $(document).ready(function() {
     $(this).find('input[type="radio"]').prop('checked', true);
   });
   
-  // Show/hide CF section based on answer
-  $('.jawaban-gejala').change(function() {
-    var gejalaId = $(this).attr('name').match(/\[(\d+)\]/)[1];
-    var jawaban = $(this).val();
-    var cfSection = $('.cf-section-' + gejalaId);
+  // Submit form gejala
+  $('#form-gejala-single').submit(function(e) {
+    var currentIndex = <?= isset($current_index) ? $current_index : 0 ?>;
+    var totalGejala = <?= isset($total_gejala) ? $total_gejala : 0 ?>;
     
-    if (jawaban == 'ya') {
-      cfSection.slideDown(200);
-      cfSection.find('input[type="radio"]:first').prop('required', true);
-    } else {
-      cfSection.slideUp(200);
-      cfSection.find('input[type="radio"]').prop('required', false).prop('checked', false);
-      cfSection.find('.cf-option').removeClass('selected');
+    if (currentIndex >= totalGejala) {
+      $('#selesai_gejala').val('1');
     }
   });
   
-  $('.jawaban-kerusakan').change(function() {
-    var kerusakanId = $(this).attr('name').match(/\[(\d+)\]/)[1];
-    var jawaban = $(this).val();
-    var cfSection = $('.cf-section-k' + kerusakanId);
+  // Submit form kerusakan
+  $('#form-kerusakan-single').submit(function(e) {
+    var currentIndex = <?= isset($current_index) ? $current_index : 0 ?>;
+    var totalKerusakan = <?= isset($total_kerusakan) ? $total_kerusakan : 0 ?>;
     
-    if (jawaban == 'ya') {
-      cfSection.slideDown(200);
-      cfSection.find('input[type="radio"]:first').prop('required', true);
-    } else {
-      cfSection.slideUp(200);
-      cfSection.find('input[type="radio"]').prop('required', false).prop('checked', false);
-      cfSection.find('.cf-option').removeClass('selected');
+    if (currentIndex >= totalKerusakan) {
+      $('#selesai_kerusakan').val('1');
     }
   });
   
